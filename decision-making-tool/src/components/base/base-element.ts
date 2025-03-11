@@ -50,8 +50,12 @@ export class BaseElement {
     });
   }
 
-  public removeAttribute(name: string): void {
-    this._node.removeAttribute(name);
+  public removeAttribute(attributes: string | string[]): void {
+    const names = Array.isArray(attributes) ? attributes : [attributes];
+
+    names.forEach((name) => {
+      this._node.removeAttribute(name);
+    });
   }
 
   public addListener(
