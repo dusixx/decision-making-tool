@@ -6,6 +6,10 @@ import prettier from 'eslint-plugin-prettier';
 import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
 
+//
+// Config
+//
+
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
@@ -35,6 +39,12 @@ export default tseslint.config(
     rules: {
       'max-len': ['warn', { code: 100, tabWidth: 2 }],
       'max-lines-per-function': ['error', 40],
+      'prettier/prettier': [
+        'error',
+        {
+          endOfLine: 'auto',
+        },
+      ],
       // 1
       '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
       '@typescript-eslint/consistent-type-imports': 'error',
@@ -64,12 +74,6 @@ export default tseslint.config(
             props: true,
             Props: true,
           },
-        },
-      ],
-      'prettier/prettier': [
-        'error',
-        {
-          endOfLine: 'auto',
         },
       ],
     },
