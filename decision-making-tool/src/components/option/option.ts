@@ -1,15 +1,15 @@
 import { Element } from '../base/element';
-import { createOption } from './helper.ts';
+import { createOption } from './create-option.ts';
 
 import styles from './option.module.scss';
 
-export class Option extends Element<HTMLDivElement> {
+export class Option extends Element<HTMLLIElement> {
   private optionId: number;
   private titleRef: Element<HTMLInputElement>;
   private weightRef: Element<HTMLInputElement>;
 
   constructor(id: number) {
-    super();
+    super({ tag: 'li', className: styles.option });
 
     const { label, title, weight, button } = createOption(id);
 
@@ -18,7 +18,6 @@ export class Option extends Element<HTMLDivElement> {
     this.weightRef = weight;
 
     this.append(label, title, weight, button);
-    this.toggleClass(styles.option);
   }
 
   public get id(): number {

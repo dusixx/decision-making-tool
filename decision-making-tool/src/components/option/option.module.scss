@@ -1,23 +1,36 @@
 .option {
   display: flex;
+  gap: 10px;
+  width: 40%;
 }
 
 .label {
   display: flex;
+  justify-content: center;
   width: 10%;
+  background-color: rgb(227 227 227);
 }
 
 .title {
   display: flex;
   width: 70%;
+
+  &::placeholder {
+    opacity: 0.4;
+  }
 }
 
 .weight {
   display: flex;
   width: 10%;
+
+  &::placeholder {
+    opacity: 0.4;
+  }
 }
 
-.btn {
+.delete-btn {
   display: flex;
+  justify-content: center;
   width: 10%;
 }
