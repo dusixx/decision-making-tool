@@ -1,30 +1,21 @@
-export type BaseElementProps = {
-  tag?: keyof HTMLElementTagNameMap;
-  className?: string;
-  text?: string;
-};
+import type { BaseElementProps } from '../../utils/create-element.ts';
+import { createElement } from '../../utils/create-element.ts';
 
 //
 // BaseElement
 //
 
-export class BaseElement {
-  private _node: HTMLElement;
+export class BaseElement<T extends HTMLElement = HTMLElement> {
+  private _node: T;
   private _children: BaseElement[] = [];
 
-  constructor(props?: BaseElementProps, ...children: BaseElement[]) {
-    const { tag = 'div', className, text } = props ?? {};
+  constructor(props?: BaseElementProps<T>, ...children: BaseElement[]) {
+    const { tag = 'div', text = '', ...rest } = props ?? {};
 
-    this._node = document.createElement(tag);
-    if (className) {
-      this._node.className = className;
-    }
-    this._node.textContent = text ?? null;
+    this._node = createElement<T>(tag, rest);
+    this._node.textContent = text;
+
     this.append(...children);
-  }
-
-  public get node(): HTMLElement {
-    return this._node;
   }
 
   public get children(): BaseElement[] {
@@ -33,6 +24,10 @@ export class BaseElement {
 
   public get text(): string {
     return this._node.textContent ?? '';
+  }
+
+  public get node(): T {
+    return this._node;
   }
 
   public set text(value: string) {

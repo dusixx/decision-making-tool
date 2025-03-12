@@ -1,6 +1,6 @@
 import { BaseElement } from './base-element';
 
-export class Element extends BaseElement {
+export class Element<T extends HTMLElement = HTMLElement> extends BaseElement<T> {
   public get visible(): boolean {
     const { style } = this.node;
     return style.visibility === 'visible';

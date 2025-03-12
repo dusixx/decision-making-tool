@@ -1,18 +1,20 @@
-import type { BaseElement, BaseElementProps } from './base-element.js';
+import type { BaseElementProps } from '../../utils/create-element.js';
+import type { BaseElement } from './base-element.js';
 import { Element } from './element.js';
 
 type EventHandler = ((event: Event) => void) | null;
-
-type Props = Pick<BaseElementProps, 'className' | 'text'>;
 
 //
 // Button
 //
 
-export class Button extends Element {
+export class Button extends Element<HTMLButtonElement> {
   private _onClick: EventHandler = null;
 
-  constructor({ className, text }: Props, ...children: BaseElement[]) {
+  constructor(
+    { className, text }: BaseElementProps<HTMLButtonElement>,
+    ...children: BaseElement[]
+  ) {
     super({ tag: 'button', className, text }, ...children);
 
     this.addListener('click', (event: Event) => this._onClick?.(event));
@@ -23,7 +25,7 @@ export class Button extends Element {
   }
 
   public get disabled(): boolean {
-    return this.node instanceof HTMLButtonElement && this.node.disabled;
+    return this.node.disabled;
   }
 
   public set onClick(handler: EventHandler) {
@@ -31,8 +33,6 @@ export class Button extends Element {
   }
 
   public set disabled(flag: boolean) {
-    if (this.node instanceof HTMLButtonElement) {
-      this.node.disabled = flag;
-    }
+    this.node.disabled = flag;
   }
 }
