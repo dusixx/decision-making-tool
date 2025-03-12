@@ -13,7 +13,13 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
+  //tseslint.configs.stylisticTypeChecked,
+  {
+    // disable type-aware linting on JS files
+    // https://typescript-eslint.io/troubleshooting/typed-linting/#how-do-i-disable-type-checked-linting-for-a-file
+    files: ['**/*.js', 'src/utils/create-element.ts'],
+    extends: [tseslint.configs.disableTypeChecked],
+  },
   {
     plugins: { unicorn, prettier },
     extends: [prettierConfig],
@@ -25,6 +31,7 @@ export default tseslint.config(
       'commitlint.config.mjs',
       'stylelint.config.mjs',
       '**/*.js',
+      'src/utils/create-element.ts',
     ],
     languageOptions: {
       parserOptions: {

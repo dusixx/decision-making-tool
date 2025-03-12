@@ -5,4 +5,8 @@ export default {
     'stylelint-config-clean-order',
     'stylelint-config-prettier-scss',
   ],
+  plugins: ['stylelint-prettier'],
+  rules: {
+    'prettier/prettier': true,
+  },
 };
