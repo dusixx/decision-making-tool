@@ -1,4 +1,4 @@
-type Props = {
+export type BaseElementProps = {
   tag?: keyof HTMLElementTagNameMap;
   className?: string;
   text?: string;
@@ -12,8 +12,8 @@ export class BaseElement {
   private _node: HTMLElement;
   private _children: BaseElement[] = [];
 
-  constructor(props: Props, ...children: BaseElement[]) {
-    const { tag = 'div', className, text } = props;
+  constructor(props?: BaseElementProps, ...children: BaseElement[]) {
+    const { tag = 'div', className, text } = props ?? {};
 
     this._node = document.createElement(tag);
     if (className) {
