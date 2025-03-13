@@ -1,5 +1,6 @@
-import { genId, JSONParse, saveToJSONFile } from '../../utils/index.ts';
+import { JSONParse } from '../../utils/index.ts';
 import { Element } from '../base/index.ts';
+import { getFileService } from '../file-service/file-service.ts';
 import { Option } from '../option/option.ts';
 import { getPushedDeleteButtonId, isLikeListData } from './helpers.ts';
 
@@ -7,6 +8,9 @@ import styles from './option-list.module.scss';
 
 const LS_KEY_LIST = 'dmt-0fef90dd-list';
 const FILE_PREFIX = 'option-list';
+const RE_EMPTY_LINES = /^(?:[\t ]*(?:\r?\n|\r))+/;
+const RE_EOL = /\r?\n|\r/;
+const RE_CSV_LINE = /^(.*),([^,]*)$/;
 
 type OptionData = { id: number; title: string; weight: string };
 
@@ -15,11 +19,20 @@ export type ListData = {
   lastId: number;
 };
 
+const normalizeCSV = (txt: string): string[] | null => {
+  const lines = txt
+    .replace(RE_EMPTY_LINES, '')
+    .split(RE_EOL)
+    .filter((line) => line.includes(','));
+
+  return lines.length ? lines : null;
+};
+
 //
 // OptionList
 //
 
-export class OptionList extends Element<HTMLUListElement> {
+class OptionList extends Element<HTMLUListElement> {
   private lastId = 1;
   private optionsMap: Map<number, Option> = new Map();
 
@@ -28,13 +41,15 @@ export class OptionList extends Element<HTMLUListElement> {
     this.addInteractivity();
   }
 
-  public add(): void {
+  public add(): Option {
     const option = new Option(this.lastId);
 
     this.optionsMap.set(option.id, option);
     this.append(option);
 
     this.lastId += 1;
+
+    return option;
   }
 
   public delete(id: number): void {
@@ -58,7 +73,7 @@ export class OptionList extends Element<HTMLUListElement> {
   }
 
   public saveToFile(): void {
-    saveToJSONFile(this.serialize(), `${FILE_PREFIX}-${genId()}`);
+    getFileService().saveText(this.serialize(), `${FILE_PREFIX}-${Date.now().toString()}`);
   }
 
   public saveToLocalStorage(): void {
@@ -78,7 +93,27 @@ export class OptionList extends Element<HTMLUListElement> {
     this.restore(data);
   }
 
-  // public parseFromCSV(txt: string): void {}
+  public parseFromCSV(txt: string): void {
+    const lines = normalizeCSV(txt);
+    if (!lines) {
+      return;
+    }
+    const options = lines.map((line) => {
+      const match = line.match(RE_CSV_LINE);
+      if (!match) {
+        return null;
+      }
+      const [, title, weight] = match;
+      const option = this.add();
+
+      option.title = title;
+      option.weight = weight;
+
+      return option;
+    });
+
+    this.append(...options);
+  }
 
   private restore(data: ListData): void {
     const { lastId, list } = data;
@@ -125,3 +160,7 @@ export class OptionList extends Element<HTMLUListElement> {
     }
   }
 }
+
+const instance = new OptionList();
+
+export const getOptionList = (): OptionList => instance;
