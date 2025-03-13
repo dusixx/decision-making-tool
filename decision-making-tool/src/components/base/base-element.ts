@@ -19,7 +19,7 @@ export class BaseElement<T extends HTMLElement = HTMLElement> {
   }
 
   public get children(): BaseElement[] {
-    return [...this._children];
+    return this._children;
   }
 
   public get text(): string {
@@ -69,8 +69,12 @@ export class BaseElement<T extends HTMLElement = HTMLElement> {
     this._node.removeEventListener(event, listener, options);
   }
 
-  public toggleClass(name: string, force: boolean): boolean {
+  public toggleClass(name: string, force?: boolean): boolean {
     return this.node.classList.toggle(name, force);
+  }
+
+  public removeChildByRef(reference: BaseElement): void {
+    this._children = this._children.filter((item) => item !== reference);
   }
 
   public remove(): void {

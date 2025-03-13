@@ -11,11 +11,8 @@ type EventHandler = ((event: Event) => void) | null;
 export class Button extends Element<HTMLButtonElement> {
   private _onClick: EventHandler = null;
 
-  constructor(
-    { className, text }: BaseElementProps<HTMLButtonElement>,
-    ...children: BaseElement[]
-  ) {
-    super({ tag: 'button', className, text }, ...children);
+  constructor(props: BaseElementProps<HTMLButtonElement>, ...children: BaseElement[]) {
+    super({ tag: 'button', ...props }, ...children);
 
     this.addListener('click', (event: Event) => this._onClick?.(event));
   }
