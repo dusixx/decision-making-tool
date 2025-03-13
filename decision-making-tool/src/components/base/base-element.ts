@@ -9,7 +9,7 @@ export class BaseElement<T extends HTMLElement = HTMLElement> {
   private _node: T;
   private _children: BaseElement[] = [];
 
-  constructor(props?: BaseElementProps<T>, ...children: BaseElement[]) {
+  constructor(props?: BaseElementProps<T>, ...children: (BaseElement | null)[]) {
     const { tag = 'div', text = '', ...rest } = props ?? {};
 
     this._node = createElement<T>(tag, rest);
@@ -34,9 +34,13 @@ export class BaseElement<T extends HTMLElement = HTMLElement> {
     this._node.textContent = value;
   }
 
-  public append(...children: BaseElement[]): void {
-    this._children = [...this._children, ...children];
-    this._node.append(...children.map((child) => child.node));
+  public append(...children: (BaseElement | null)[]): void {
+    children.forEach((child) => {
+      if (child) {
+        this._children.push(child);
+      }
+    });
+    this._node.append(...children.map((child) => child?.node ?? ''));
   }
 
   public setAttribute(attributes: Record<string, string>): void {
