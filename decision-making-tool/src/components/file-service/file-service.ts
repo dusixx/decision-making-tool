@@ -13,12 +13,12 @@ class FileService {
     this.loader.onError = handler;
   }
 
-  public saveToJSON(content: string, fileName: string): void {
+  public saveText(content: string, fileName: string, fileType: string = 'json'): void {
     const { link } = this;
     const file = new Blob([content], { type: 'text/plain' });
 
     link.href = URL.createObjectURL(file);
-    link.download = `${fileName}.json`;
+    link.download = `${fileName}.${fileType || 'txt'}`;
     link.click();
   }
 
