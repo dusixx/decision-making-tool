@@ -1,31 +1,25 @@
 import { JSONParse } from '../../utils/index.ts';
 import { Element } from '../base/index.ts';
-import { getFileService } from '../file-service/file-service.ts';
+import { fileService } from '../file-service/file-service.ts';
 import { Option } from '../option/option.ts';
-import { getPushedDeleteButtonId, isLikeListData } from './helpers.ts';
+import {
+  getPressedDeleteButtonId,
+  isLikeListData,
+  isValidWeight,
+  normalizeCSV,
+} from './helpers.ts';
 
 import styles from './option-list.module.scss';
 
 const LS_KEY_LIST = 'dmt-0fef90dd-list';
 const FILE_PREFIX = 'option-list';
-const RE_EMPTY_LINES = /^(?:[\t ]*(?:\r?\n|\r))+/;
-const RE_EOL = /\r?\n|\r/;
 const RE_CSV_LINE = /^(.*),([^,]*)$/;
 
-type OptionData = { id: number; title: string; weight: string };
+export type OptionData = { id: number; title: string; weight: string };
 
 export type ListData = {
   list: OptionData[];
   lastId: number;
-};
-
-const normalizeCSV = (txt: string): string[] | null => {
-  const lines = txt
-    .replace(RE_EMPTY_LINES, '')
-    .split(RE_EOL)
-    .filter((line) => line.includes(','));
-
-  return lines.length ? lines : null;
 };
 
 //
@@ -41,12 +35,10 @@ class OptionList extends Element<HTMLUListElement> {
     this.addInteractivity();
   }
 
-  public add(): Option {
-    const option = new Option(this.lastId);
+  public add(title: string = '', weight: string = ''): Option {
+    const option = this.createOption({ id: this.lastId, title, weight });
 
-    this.optionsMap.set(option.id, option);
     this.append(option);
-
     this.lastId += 1;
 
     return option;
@@ -73,15 +65,18 @@ class OptionList extends Element<HTMLUListElement> {
   }
 
   public saveToFile(): void {
-    getFileService().saveText(this.serialize(), `${FILE_PREFIX}-${Date.now().toString()}`);
+    fileService.saveText(this.serialize(), `${FILE_PREFIX}-${Date.now().toString()}`);
   }
 
   public saveToLocalStorage(): void {
-    localStorage.setItem(LS_KEY_LIST, this.serialize());
+    const data = this.serialize();
+    console.log(this.optionsMap);
+    localStorage.setItem(LS_KEY_LIST, data);
   }
 
   public restoreFromLocalStorage(): void {
     const data = localStorage.getItem(LS_KEY_LIST);
+    console.log('from LS:', data);
     this.restoreFromJSON(data ?? '');
   }
 
@@ -93,7 +88,7 @@ class OptionList extends Element<HTMLUListElement> {
     this.restore(data);
   }
 
-  public parseFromCSV(txt: string): void {
+  public parseCSV(txt: string): void {
     const lines = normalizeCSV(txt);
     if (!lines) {
       return;
@@ -104,33 +99,33 @@ class OptionList extends Element<HTMLUListElement> {
         return null;
       }
       const [, title, weight] = match;
-      const option = this.add();
 
-      option.title = title;
-      option.weight = weight;
-
-      return option;
+      if (!isValidWeight(weight)) {
+        return null;
+      }
+      return this.add(title, weight);
     });
 
     this.append(...options);
   }
 
+  private createOption = ({ id, title, weight }: OptionData): Option => {
+    const option = new Option(id);
+
+    option.title = title;
+    option.weight = weight;
+    this.optionsMap.set(id, option);
+
+    return option;
+  };
+
   private restore(data: ListData): void {
+    this.clear();
+
     const { lastId, list } = data;
     this.lastId = lastId;
 
-    this.clear();
-
-    const options = list.map(({ id, title, weight }) => {
-      const option = new Option(id);
-
-      option.title = title;
-      option.weight = weight;
-      this.optionsMap.set(id, option);
-
-      return option;
-    });
-
+    const options = list.map(this.createOption);
     this.append(...options);
   }
 
@@ -147,7 +142,7 @@ class OptionList extends Element<HTMLUListElement> {
 
   private addInteractivity(): void {
     this.addListener('click', (event) => {
-      const id = getPushedDeleteButtonId(event);
+      const id = getPressedDeleteButtonId(event);
       if (id != null) {
         this.delete(Number(id));
       }
@@ -161,6 +156,4 @@ class OptionList extends Element<HTMLUListElement> {
   }
 }
 
-const instance = new OptionList();
-
-export const getOptionList = (): OptionList => instance;
+export const optionList = new OptionList();
