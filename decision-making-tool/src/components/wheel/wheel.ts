@@ -1,24 +1,25 @@
-import { getRndColorMixCss, getRootCSSVariable } from '../../utils/index.ts';
+import { getRndColorMixCss } from '../../utils/index.ts';
 import { Element } from '../base/element.ts';
 import type { OptionData } from '../option-list/option-list.ts';
 import { parseOptionsData } from './helpers.ts';
 
 import styles from './wheel.module.scss';
 
-const NEEDLE_CSS_VARNAME = '--wheel-needle-diameter-ratio';
+const NEEDLE_RADIUS_RATIO = 0.1;
 
 const PI2 = Math.PI * 2;
 const DEF_WHEEL_RADIUS = 250;
 const DEF_WHEEL_DURATION_SECS = 5;
-const WHEEL_SPIN_DELTA = 0.00015;
+const WHEEL_SPIN_SPEED = 0.00015;
 const LINE_WIDTH = 1;
 const STROKE_COLOR = 'white';
 const CURSOR_POSITION = Math.PI * 1.5;
+const CANVAS_PADDING = 20;
 
-const SLICE_TEXT_NEEDLE_OFFSET = 40;
+const SLICE_TEXT_NEEDLE_OFFSET = 35;
 const SLICE_TEXT_VISIBILITY_ANGLE_THRESHOLD = 0.27;
 const SLICE_TEXT_COLOR = 'black';
-const SLICE_TEXT_FONT = '0.9rem sans-serif';
+const SLICE_TEXT_FONT = '15px sans-serif';
 
 const ERR_INVALID_CONTEXT =
   'The context id is not supported, or the canvas has already been set to a different context mode';
@@ -45,8 +46,7 @@ type Props = {
 // Wheel
 //
 
-export class Wheel extends Element<HTMLDivElement> {
-  private canvas: Element<HTMLCanvasElement>;
+export class Wheel extends Element<HTMLCanvasElement> {
   private context: CanvasRenderingContext2D;
   private slices: SliceData[] = [];
   private totalWeight: number = 0;
@@ -55,15 +55,15 @@ export class Wheel extends Element<HTMLDivElement> {
   private _currentSlice: SliceData | null = null;
 
   constructor({ options, radius = DEF_WHEEL_RADIUS }: Props) {
-    super({ tag: 'div', className: styles.wheel });
+    super({ tag: 'canvas', className: styles.canvas });
 
-    this.canvas = new Element<HTMLCanvasElement>({ tag: 'canvas', className: styles.canvas });
     this.radius = radius;
     this.context = this.getContext2D();
 
     this.validateOptions(options);
     this.createSlicesFromOptions(options);
-    this.append(this.canvas);
+    this.createNeedle();
+    this.createCursor();
   }
 
   public get currentSlice(): SliceData | null {
@@ -76,19 +76,18 @@ export class Wheel extends Element<HTMLDivElement> {
 
   public get center(): Point {
     return {
-      x: this.canvas.node.width / 2,
-      y: this.canvas.node.height / 2,
+      x: this.node.width / 2,
+      y: this.node.height / 2,
     };
   }
 
   public get needleRadius(): number {
-    const ratio = parseInt(getRootCSSVariable(NEEDLE_CSS_VARNAME));
-    return (ratio / 100) * this.radius;
+    return this.radius * NEEDLE_RADIUS_RATIO;
   }
 
   public set radius(v: number) {
-    this.canvas.node.width = v * 2;
-    this.canvas.node.height = v * 2;
+    this.node.width = v * 2 + CANVAS_PADDING;
+    this.node.height = v * 2 + CANVAS_PADDING;
     this._radius = v;
   }
 
@@ -108,7 +107,7 @@ export class Wheel extends Element<HTMLDivElement> {
 
     const animate = (): void => {
       const elapsed = performance.now() - startTime;
-      angle += WHEEL_SPIN_DELTA * (elapsed >= durationMs / 2 ? -1 : 1);
+      angle += WHEEL_SPIN_SPEED * (elapsed >= durationMs / 2 ? -1 : 1);
 
       if (elapsed >= durationMs) {
         this._onFinish?.(this.currentSlice);
@@ -134,7 +133,6 @@ export class Wheel extends Element<HTMLDivElement> {
 
   private draw(angleDeltaRad: number = 0): void {
     this.clearCanvas();
-    this.context = this.getContext2D();
 
     for (const slice of this.slices) {
       slice.startAngleRad += angleDeltaRad;
@@ -148,6 +146,8 @@ export class Wheel extends Element<HTMLDivElement> {
       }
 
       this.createSlice(slice);
+      this.createNeedle();
+      this.createCursor();
     }
   }
 
@@ -186,11 +186,11 @@ export class Wheel extends Element<HTMLDivElement> {
   }
 
   private clearCanvas(): void {
-    this.context.clearRect(0, 0, this.canvas.node.width, this.canvas.node.height);
+    this.context.clearRect(0, 0, this.node.width, this.node.height);
   }
 
   private getContext2D(): CanvasRenderingContext2D {
-    const context = this.canvas.node.getContext('2d');
+    const context = this.node.getContext('2d');
     if (!context) {
       throw Error(ERR_INVALID_CONTEXT);
     }
@@ -204,10 +204,37 @@ export class Wheel extends Element<HTMLDivElement> {
 
     // text too long
     if (ratio <= 1) {
-      const shortenedTitle = title.slice(0, title.length * ratio);
+      const shortenedTitle = title.slice(0, Math.floor(title.length * ratio) - 2);
       return `${shortenedTitle}...`;
     }
     return title;
+  }
+
+  private createCursor(): void {
+    const {
+      context,
+      center: { x: cx },
+    } = this;
+    context.beginPath();
+    context.moveTo(cx - 10, 0);
+    context.lineTo(cx, 5);
+    context.lineTo(cx + 10, 0);
+    context.lineTo(cx, 25);
+    context.fillStyle = `rgb(255, 0, 85)`;
+    context.fill();
+  }
+
+  private createNeedle(): void {
+    const {
+      context,
+      radius,
+      center: { x: cx, y: cy },
+    } = this;
+    context.beginPath();
+    context.arc(cx, cy, radius * NEEDLE_RADIUS_RATIO, 0, PI2);
+    context.fillStyle = `white`;
+    context.lineTo(cx, cy);
+    context.fill();
   }
 
   private createSliceText(slice: SliceData): void {
