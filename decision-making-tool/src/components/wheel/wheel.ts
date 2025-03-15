@@ -7,6 +7,7 @@ import styles from './wheel.module.scss';
 
 const NEEDLE_CSS_VARNAME = '--wheel-needle-diameter-ratio';
 
+const PI2 = Math.PI * 2;
 const DEF_WHEEL_RADIUS = 250;
 const DEF_WHEEL_DURATION_SECS = 5;
 const WHEEL_SPIN_DELTA = 0.00015;
@@ -132,8 +133,6 @@ export class Wheel extends Element<HTMLDivElement> {
   }
 
   private draw(angleDeltaRad: number = 0): void {
-    const PI2 = Math.PI * 2;
-
     this.clearCanvas();
     this.context = this.getContext2D();
 
@@ -169,7 +168,7 @@ export class Wheel extends Element<HTMLDivElement> {
     let startAngleRad: number = 0;
 
     for (const item of options) {
-      const itemAngleRad = (Math.PI * 2 * item.weight) / this.totalWeight;
+      const itemAngleRad = (PI2 * item.weight) / this.totalWeight;
       const endAngleRad = startAngleRad + itemAngleRad;
 
       const slice = {
