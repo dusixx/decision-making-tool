@@ -1,0 +1,45 @@
+.wrapper {
+  @extend %wrapper;
+}
+
+.sound-btn {
+  @extend %btn-primary;
+
+  min-width: 60px;
+  font-size: 18px;
+  background-color: rgb(200 200 200);
+}
+
+.btn {
+  @extend %btn-primary;
+}
+
+.start-btn {
+  background-color: var(--color-accent);
+}
+
+.btns {
+  @extend %section-btns;
+}
+
+.input {
+  @extend %text-input;
+
+  display: flex;
+  max-width: 80px;
+  text-align: center;
+
+  &::placeholder {
+    opacity: 0.5;
+  }
+}
+
+.label {
+  font-size: 20px;
+}
+
+.duration-wrapper {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
