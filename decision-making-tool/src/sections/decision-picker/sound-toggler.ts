@@ -25,7 +25,7 @@ export class SoundToggler extends Button {
     this.init();
 
     this.onClick = (): void => {
-      this.update(!this.isMuted);
+      this.toggle();
     };
   }
 
@@ -33,18 +33,19 @@ export class SoundToggler extends Button {
     return this.isMuted;
   }
 
-  public set muted(v: boolean) {
-    this.update(v);
-  }
-
   private init(): void {
-    const value = JSONParse(localStorage.getItem(LS_KEY_MUTED) ?? '');
-    this.update(typeof value === 'string' && value === 'true');
+    const value = JSONParse(localStorage.getItem(LS_KEY_MUTED) ?? '0');
+    this.isMuted = Boolean(Number(value));
+    this.update();
   }
 
-  private update(v: boolean): void {
-    this.isMuted = v;
-    this.node.textContent = v ? SoundState.Muted : SoundState.Unmuted;
-    localStorage.setItem(LS_KEY_MUTED, v.toString());
+  private update(): void {
+    this.node.textContent = this.isMuted ? SoundState.Muted : SoundState.Unmuted;
+  }
+
+  private toggle(): void {
+    this.isMuted = !this.isMuted;
+    this.update();
+    localStorage.setItem(LS_KEY_MUTED, Number(this.isMuted).toString());
   }
 }

@@ -125,7 +125,7 @@ export class DecisionPickerSection extends Element {
       void wonSound.play();
     }
     this.messageBox.show(
-      winner ? `#${winner.id.toString()}: "${winner.title}" won! 🥳` : ERR_NO_WINNER
+      winner ? `#${winner.id.toString()} "${winner.title}" won! 🥳` : ERR_NO_WINNER
     );
   };
 
