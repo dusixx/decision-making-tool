@@ -16,8 +16,8 @@ export const parseOptionsData = (options: OptionData[]): ParseResult => {
   };
   let validsCount = 0;
 
-  for (const { weight } of options) {
-    if (isValidWeight(weight)) {
+  for (const { weight, title } of options) {
+    if (title && isValidWeight(weight)) {
       result.totalWeight += Number(weight);
       validsCount += 1;
     }

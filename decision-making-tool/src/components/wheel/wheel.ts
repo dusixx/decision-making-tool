@@ -10,7 +10,7 @@ const CANVAS_PADDING = 20;
 const LINE_WIDTH = 1;
 const STROKE_COLOR = 'white';
 
-const NEEDLE_RADIUS_RATIO = 0.1;
+const NEEDLE_RADIUS_RATIO = 0.13;
 const NEEDLE_COLOR = 'white';
 
 const WHEEL_DEF_RADIUS = 250;
@@ -18,10 +18,10 @@ const WHEEL_DEF_RADIUS = 250;
 const CURSOR_POSITION = Math.PI * 1.5;
 const CURSOR_COLOR = 'rgb(206, 20, 104)';
 
-const SLICE_TEXT_NEEDLE_OFFSET = 35;
+const SLICE_TEXT_NEEDLE_OFFSET = 30;
 const SLICE_TEXT_VISIBILITY_ANGLE_THRESHOLD = 0.27;
 const SLICE_TEXT_COLOR = 'black';
-const SLICE_TEXT_FONT = '15px sans-serif';
+const SLICE_TEXT_FONT = '16px sans-serif';
 
 const ERR_INVALID_CONTEXT =
   'The context id is not supported, or the canvas has already been set to a different context mode';
@@ -57,6 +57,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
   private _radius: number = 0;
   private _onFinish: OnFinishHandler = null;
   private _currentSlice: SliceData | null = null;
+  private _abort = false;
 
   constructor({ options, radius = WHEEL_DEF_RADIUS }: Props) {
     super({ tag: 'canvas', className: styles.canvas });
@@ -100,6 +101,10 @@ export class Wheel extends Element<HTMLCanvasElement> {
     this._onFinish = handler;
   }
 
+  public stop(): void {
+    this._abort = true;
+  }
+
   public spin(durationSecs: number): void {
     const startTime = performance.now();
     const speed = getRndWheelSpeed();
@@ -116,9 +121,12 @@ export class Wheel extends Element<HTMLCanvasElement> {
       // but the time will go as before
       angle = angle < 0 ? 0 : angle;
 
-      if (elapsed >= durationMs) {
-        this._onFinish?.(this.currentSlice);
+      if (elapsed >= durationMs || this._abort) {
         cancelAnimationFrame(rafId);
+        if (!this._abort) {
+          this._onFinish?.(this.currentSlice);
+        }
+        this._abort = false;
 
         return;
       }
@@ -134,7 +142,10 @@ export class Wheel extends Element<HTMLCanvasElement> {
 
     for (const slice of this.slices) {
       slice.color = getRndColorMixCss();
+
       this.createSlice(slice);
+      this.createNeedle();
+      this.createCursor();
     }
   }
 
@@ -178,6 +189,9 @@ export class Wheel extends Element<HTMLCanvasElement> {
       const itemAngleRad = (PI2 * item.weight) / this.totalWeight;
       const endAngleRad = startAngleRad + itemAngleRad;
 
+      if (item.weight && !item.title) {
+        continue;
+      }
       const slice = {
         ...item,
         startAngleRad,
