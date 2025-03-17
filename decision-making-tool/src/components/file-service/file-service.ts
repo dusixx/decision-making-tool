@@ -1,9 +1,14 @@
 import type { OnErrorHandler, OnLoadHandler } from './file-loader.ts';
 import { FileLoader } from './file-loader.ts';
 
-class FileService {
-  private loader = new FileLoader();
+export class FileService {
+  private static _instance = new FileService();
+  private loader = FileLoader.instance;
   private link = document.createElement('a');
+
+  public static get instance(): FileService {
+    return this._instance;
+  }
 
   public set onLoad(handler: OnLoadHandler) {
     this.loader.onLoad = handler;
@@ -28,7 +33,3 @@ class FileService {
     loader.showDialog();
   }
 }
-
-const instance = new FileService();
-
-export const getFileService = (): FileService => instance;

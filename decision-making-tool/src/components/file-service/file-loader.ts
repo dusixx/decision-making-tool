@@ -11,6 +11,7 @@ export type OnErrorHandler = (() => void) | null;
 //
 
 export class FileLoader extends Element<HTMLInputElement> {
+  private static _instance: FileLoader = new FileLoader();
   private _onLoad: OnLoadHandler = null;
   private _onError: OnErrorHandler = null;
 
@@ -18,6 +19,10 @@ export class FileLoader extends Element<HTMLInputElement> {
     super({ tag: 'input', type: 'file' });
     this.node.style.display = 'none';
     this.addInteractivity();
+  }
+
+  public static get instance(): FileLoader {
+    return this._instance;
   }
 
   public get type(): string {
