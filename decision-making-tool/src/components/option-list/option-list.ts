@@ -1,7 +1,8 @@
 import { JSONParse } from '../../utils/index.ts';
 import { Element } from '../base/index.ts';
-import { fileService } from '../file-service/file-service.ts';
+import { FileService } from '../file-service/file-service.ts';
 import { Option } from '../option/option.ts';
+
 import {
   getPressedDeleteButtonId,
   isLikeListData,
@@ -11,22 +12,26 @@ import {
 
 import styles from './option-list.module.scss';
 
-const LS_KEY_LIST = 'dmt-0fef90dd-list';
+export const LS_KEY_LIST = 'dmt-0fef90dd-list';
 const FILE_PREFIX = 'option-list';
 const RE_CSV_LINE = /^(.*),([^,]*)$/;
 
-export type OptionData = { id: number; title: string; weight: string };
+export type OptionData = { id: number; title: string; weight: number };
 
 export type ListData = {
   list: OptionData[];
   lastId: number;
 };
 
+const fileService = FileService.instance;
+
 //
+//-----------------------------
 // OptionList
+//-----------------------------
 //
 
-class OptionList extends Element<HTMLUListElement> {
+export class OptionList extends Element<HTMLUListElement> {
   private lastId = 1;
   private optionsMap: Map<number, Option> = new Map();
 
@@ -35,7 +40,14 @@ class OptionList extends Element<HTMLUListElement> {
     this.addInteractivity();
   }
 
-  public add(title: string = '', weight: string = ''): Option {
+  public static getFromLocalStorage = (): ListData | null => {
+    const txt = localStorage.getItem(LS_KEY_LIST);
+    const data = JSONParse(txt ?? '');
+
+    return isLikeListData(data) ? data : null;
+  };
+
+  public add(title: string = '', weight: number = 0): Option {
     const option = this.createOption({ id: this.lastId, title, weight });
 
     this.append(option);
@@ -70,14 +82,14 @@ class OptionList extends Element<HTMLUListElement> {
 
   public saveToLocalStorage(): void {
     const data = this.serialize();
-    console.log(this.optionsMap);
     localStorage.setItem(LS_KEY_LIST, data);
   }
 
-  public restoreFromLocalStorage(): void {
+  public restoreFromLocalStorage(): boolean {
     const data = localStorage.getItem(LS_KEY_LIST);
-    console.log('from LS:', data);
     this.restoreFromJSON(data ?? '');
+
+    return Boolean(data);
   }
 
   public restoreFromJSON(txt: string): void {
@@ -100,20 +112,28 @@ class OptionList extends Element<HTMLUListElement> {
       }
       const [, title, weight] = match;
 
-      if (!isValidWeight(weight)) {
-        return null;
+      if (!weight || isValidWeight(weight)) {
+        return this.add(title, Number(weight));
       }
-      return this.add(title, weight);
+      return null;
     });
 
     this.append(...options);
+  }
+
+  public getOptionsData(): OptionData[] {
+    return [...this.optionsMap].map(([id, { title, weight }]) => {
+      const weightNumber = isValidWeight(weight) ? Number(weight) : 0;
+
+      return { id, title, weight: weightNumber };
+    });
   }
 
   private createOption = ({ id, title, weight }: OptionData): Option => {
     const option = new Option(id);
 
     option.title = title;
-    option.weight = weight;
+    option.weight = isValidWeight(weight) ? weight.toString() : '';
     this.optionsMap.set(id, option);
 
     return option;
@@ -130,12 +150,8 @@ class OptionList extends Element<HTMLUListElement> {
   }
 
   private serialize(): string {
-    const list: OptionData[] = [...this.optionsMap].map(([id, { title, weight }]) => {
-      return { id, title, weight };
-    });
-
     return JSON.stringify({
-      list,
+      list: this.getOptionsData(),
       lastId: this.lastId,
     });
   }
@@ -155,5 +171,3 @@ class OptionList extends Element<HTMLUListElement> {
     }
   }
 }
-
-export const optionList = new OptionList();

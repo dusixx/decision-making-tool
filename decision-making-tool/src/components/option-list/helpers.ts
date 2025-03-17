@@ -1,6 +1,9 @@
 import { isPositiveInt } from '../../utils/misc.ts';
 import type { ListData } from './option-list.ts';
 
+const RE_EMPTY_LINES = /^(?:[\t ]*(?:\r?\n|\r))+/;
+const RE_EOL = /\r?\n|\r/;
+
 export const getPressedDeleteButtonId = ({ target }: Event): number | undefined => {
   if (!(target instanceof HTMLElement)) {
     return;
@@ -22,9 +25,6 @@ export const isLikeListData = (v: unknown): v is ListData => {
   );
 };
 
-const RE_EMPTY_LINES = /^(?:[\t ]*(?:\r?\n|\r))+/;
-const RE_EOL = /\r?\n|\r/;
-
 export const normalizeCSV = (txt: string): string[] | null => {
   const lines = txt
     .replace(RE_EMPTY_LINES, '')
@@ -35,5 +35,5 @@ export const normalizeCSV = (txt: string): string[] | null => {
 };
 
 export const isValidWeight = (weight: string | number): boolean => {
-  return isPositiveInt(weight) && Number(weight) > 0;
+  return isPositiveInt(weight) && weight > 0;
 };
