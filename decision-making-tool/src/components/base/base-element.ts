@@ -5,7 +5,7 @@ import { createElement } from '../../utils/create-element.ts';
 // BaseElement
 //
 
-export class BaseElement<T extends HTMLElement = HTMLElement> {
+export abstract class BaseElement<T extends HTMLElement = HTMLElement> {
   private _node: T;
   private _children: BaseElement[] = [];
 

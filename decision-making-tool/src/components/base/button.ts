@@ -12,7 +12,7 @@ export class Button extends Element<HTMLButtonElement> {
   private _onClick: EventHandler = null;
 
   constructor(props: BaseElementProps<HTMLButtonElement>, ...children: BaseElement[]) {
-    super({ tag: 'button', ...props }, ...children);
+    super({ tag: 'button', type: 'button', ...props }, ...children);
 
     this.addListener('click', (event: Event) => this._onClick?.(event));
   }
