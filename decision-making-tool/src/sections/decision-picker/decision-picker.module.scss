@@ -7,7 +7,15 @@
 
   min-width: 60px;
   font-size: 18px;
-  background-color: rgb(200 200 200);
+  background-color: rgb(253 224 163);
+}
+
+.repaint-btn {
+  @extend %btn-primary;
+
+  min-width: 60px;
+  font-size: 18px;
+  background-color: rgb(179 189 255);
 }
 
 .btn {
@@ -26,7 +34,7 @@
   @extend %text-input;
 
   display: flex;
-  max-width: 80px;
+  max-width: 70px;
   text-align: center;
 
   &::placeholder {
@@ -40,6 +48,10 @@
 
 .duration-wrapper {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
+
+  & label {
+    font-size: 26px;
+  }
 }

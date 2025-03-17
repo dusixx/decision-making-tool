@@ -84,6 +84,11 @@
   font-size: 15px;
 
   appearance: unset;
+  outline: none;
+
+  &:focus-visible {
+    border: 1px solid rgb(78 169 255);
+  }
 }
 
 %section-btns {
