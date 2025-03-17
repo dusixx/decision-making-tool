@@ -1,3 +1,4 @@
+import { EVENT_APP_CONTENT_CHANGE } from '../../components/app/app.ts';
 import { Button } from '../../components/base/button.ts';
 import { Element } from '../../components/base/element.ts';
 import type { FileData } from '../../components/file-service/file-loader.ts';
@@ -22,7 +23,6 @@ const buttonsData: Record<string, string> = {
 
 type ButtonsMap = Record<keyof typeof buttonsData, Button>;
 
-// TODO: исправить проверку на валидность кругом
 const ERR_INVALID_OPTIONS_COUNT = `Please add at least 2 valid options.
   An option is considered valid if its title is not empty and its weight is greater than 0`;
 
@@ -126,7 +126,14 @@ export class OptionListSection extends Element {
     };
   }
 
+  private handleAppContentChange(): void {
+    document.addEventListener(EVENT_APP_CONTENT_CHANGE, () => {
+      this.optionList.saveToLocalStorage();
+    });
+  }
+
   private addInteractivity(): void {
+    this.handleAppContentChange();
     this.handleLoadClick();
     this.handlePasteClick();
     this.handleStartClick();

@@ -20,7 +20,7 @@ export class SoundToggler extends Button {
   private isMuted: boolean = false;
 
   constructor() {
-    super({ className: styles.soundBtn });
+    super({ className: styles.soundBtn, title: 'sound on/off' });
 
     this.init();
 
