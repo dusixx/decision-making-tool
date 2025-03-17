@@ -1,8 +1,11 @@
+import { HeaderSection } from '../../sections/header/header.ts';
 import { DecisionPickerSection, OptionListSection } from '../../sections/index.ts';
 import { NotFoundSection } from '../../sections/not-found/not-found.ts';
 import { Element } from '../base/element.ts';
 import type { RouteData } from '../router/router.ts';
 import { Router } from '../router/router.ts';
+
+export const EVENT_APP_CONTENT_CHANGE = 'appcontentchange';
 
 //
 //-----------------------------
@@ -10,8 +13,9 @@ import { Router } from '../router/router.ts';
 //-----------------------------
 //
 
-class App extends Element {
+class MainSection extends Element {
   private router: Router;
+
   constructor() {
     super({ tag: 'main' });
 
@@ -28,18 +32,14 @@ class App extends Element {
       {
         pathname: '/decision-picker',
         callback: (): void => {
+          document.dispatchEvent(new Event(EVENT_APP_CONTENT_CHANGE));
           this.setContent(new DecisionPickerSection(this.router));
         },
       },
       {
         pathname: '/',
         callback: (): void => {
-          this.setContent(new OptionListSection(this.router));
-        },
-      },
-      {
-        pathname: '/index',
-        callback: (): void => {
+          document.dispatchEvent(new Event(EVENT_APP_CONTENT_CHANGE));
           this.setContent(new OptionListSection(this.router));
         },
       },
@@ -53,4 +53,4 @@ class App extends Element {
   }
 }
 
-document.body.append(new App().node);
+document.body.append(new HeaderSection().node, new MainSection().node);

@@ -51,8 +51,9 @@ export function createOption(id: number): OptionElements {
   });
 
   const button = new Button({
-    className: styles['delete-btn'],
+    className: styles.deleteBtn,
     text: DELETE_BTN_TEXT,
+    title: 'delete',
   });
   button.node.dataset.delete = id.toString();
 

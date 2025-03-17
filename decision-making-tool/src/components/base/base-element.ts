@@ -2,7 +2,9 @@ import type { BaseElementProps } from '../../utils/create-element.ts';
 import { createElement } from '../../utils/create-element.ts';
 
 //
-// BaseElement
+//-----------------------------
+//  BaseElement
+//-----------------------------
 //
 
 export abstract class BaseElement<T extends HTMLElement = HTMLElement> {

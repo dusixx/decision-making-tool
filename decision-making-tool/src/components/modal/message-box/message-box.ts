@@ -3,6 +3,12 @@ import { Modal } from '../modal.ts';
 
 import styles from './message-box.module.scss';
 
+//
+//-----------------------------
+//  MessageBox
+//-----------------------------
+//
+
 export class MessageBox {
   private modal: Modal;
   private para: Element<HTMLParagraphElement>;

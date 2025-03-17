@@ -1,5 +1,11 @@
 import { BaseElement } from './base-element';
 
+//
+//-----------------------------
+//  Element
+//-----------------------------
+//
+
 export class Element<T extends HTMLElement = HTMLElement> extends BaseElement<T> {
   public get visible(): boolean {
     const { style } = this.node;

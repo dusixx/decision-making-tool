@@ -5,7 +5,9 @@ import { Element } from './element.js';
 type EventHandler = ((event: Event) => void) | null;
 
 //
-// Button
+//-----------------------------
+//  Button
+//-----------------------------
 //
 
 export class Button extends Element<HTMLButtonElement> {

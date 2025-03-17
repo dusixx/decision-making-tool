@@ -16,7 +16,11 @@ export const LS_KEY_LIST = 'dmt-0fef90dd-list';
 const FILE_PREFIX = 'option-list';
 const RE_CSV_LINE = /^(.*),([^,]*)$/;
 
-export type OptionData = { id: number; title: string; weight: number };
+export type OptionData = {
+  id: number;
+  title: string;
+  weight: number;
+};
 
 export type ListData = {
   list: OptionData[];
