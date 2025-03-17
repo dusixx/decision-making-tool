@@ -17,7 +17,7 @@ export default tseslint.config(
   {
     // disable type-aware linting on JS files
     // https://typescript-eslint.io/troubleshooting/typed-linting/#how-do-i-disable-type-checked-linting-for-a-file
-    files: ['**/*.js', 'src/utils/create-element.ts'],
+    files: ['**/*.js', 'src/utils/create-element.ts', 'src/utils/local-storage.ts'],
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
@@ -44,6 +44,7 @@ export default tseslint.config(
       reportUnusedDisableDirectives: true,
     },
     rules: {
+      // '@typescript-eslint/no-extraneous-class': 'off',
       'max-len': ['warn', { code: 100, tabWidth: 2 }],
       'max-lines-per-function': ['error', 40],
       'prettier/prettier': [
@@ -52,6 +53,7 @@ export default tseslint.config(
           endOfLine: 'auto',
         },
       ],
+      '@typescript-eslint/no-misused-spread': 'off',
       // 1
       '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
       '@typescript-eslint/consistent-type-imports': 'error',
