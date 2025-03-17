@@ -5,12 +5,13 @@ import { FileService } from '../../components/file-service/file-service.ts';
 import { MessageBox } from '../../components/modal/message-box/message-box.ts';
 import { PasteList } from '../../components/modal/paste-list/paste-list.ts';
 import { OptionList } from '../../components/option-list/option-list.ts';
+import type { Router } from '../../components/router/router.ts';
+import { Endpoint } from '../../components/router/router.ts';
 import { parseOptionsData } from '../../components/wheel/helpers.ts';
-import { SoundToggler } from '../decision-picker-section/sound-toggler.ts';
 
-import styles from './option-list-section.module.scss';
+import styles from './option-list.module.scss';
 
-const buttonData: Record<string, string> = {
+const buttonsData: Record<string, string> = {
   add: 'add item',
   paste: 'paste list',
   clear: 'clear list',
@@ -19,57 +20,59 @@ const buttonData: Record<string, string> = {
   start: '🚀 start',
 };
 
-type ButtonsMap = Record<keyof typeof buttonData, Button>;
-
-const messageBox = new MessageBox();
+type ButtonsMap = Record<keyof typeof buttonsData, Button>;
 
 // TODO: исправить проверку на валидность кругом
 const ERR_INVALID_OPTIONS_COUNT = `Please add at least 2 valid options.
   An option is considered valid if its title is not empty and its weight is greater than 0`;
 
 //
-// OptionListSection
+//-----------------------------
+//  OptionListSection
+//-----------------------------
 //
 
 export class OptionListSection extends Element {
+  private messageBox: MessageBox;
   private fileService: FileService = FileService.instance;
   private optionList: OptionList = new OptionList();
   private pasteList: PasteList = new PasteList();
   private buttons: ButtonsMap = {};
 
-  constructor() {
+  constructor(private router: Router) {
     super({ tag: 'section' });
+
+    this.router = router;
+    this.messageBox = new MessageBox(this.pasteList.parentModal);
 
     const success = this.optionList.restoreFromLocalStorage();
     if (!success) {
       this.optionList.add();
     }
-    this.append(this.createWrapper());
+    this.append(this.createWrapperElement());
     this.addInteractivity();
   }
 
-  private createWrapper(): Element<HTMLDivElement> {
+  private createWrapperElement(): Element<HTMLDivElement> {
     return new Element<HTMLDivElement>(
       { tag: 'div', className: styles.wrapper },
-      this.createButtons(),
+      this.createButtonsElement(),
       this.optionList,
-      this.pasteList.underlyingElement
+      this.pasteList.parentModal
     );
   }
 
-  private createButtons(): Element<HTMLDivElement> {
-    const buttons = Object.entries(buttonData).map(([name, text]) => {
+  private createButtonsElement(): Element<HTMLDivElement> {
+    const buttons = Object.entries(buttonsData).map(([name, text]) => {
       const button = new Button({ className: styles.btn, text });
 
-      if (button.text === buttonData.start) {
+      if (button.text === buttonsData.start) {
         button.toggleClass(styles.startBtn);
       }
       this.buttons[name] = button;
 
       return button;
     });
-
-    buttons.push(new SoundToggler());
 
     return new Element<HTMLDivElement>({ tag: 'div', className: styles.btns }, ...buttons);
   }
@@ -98,27 +101,37 @@ export class OptionListSection extends Element {
     this.buttons.start.onClick = (): void => {
       const parsed = parseOptionsData(this.optionList.getOptionsData());
       if (!parsed.isValid) {
-        messageBox.show(ERR_INVALID_OPTIONS_COUNT);
+        this.messageBox.show(ERR_INVALID_OPTIONS_COUNT);
+        return;
       }
+      this.router.navigate(Endpoint.DecisionPicker);
+    };
+  }
+
+  private handleAddClick(): void {
+    this.buttons.add.onClick = (): void => {
+      this.optionList.add();
+    };
+  }
+
+  private handleClearClick(): void {
+    this.buttons.clear.onClick = (): void => {
+      this.optionList.clear();
+    };
+  }
+
+  private handleSaveClick(): void {
+    this.buttons.save.onClick = (): void => {
+      this.optionList.saveToFile();
     };
   }
 
   private addInteractivity(): void {
-    const { optionList } = this;
-    const { add, clear, save } = this.buttons;
-
     this.handleLoadClick();
     this.handlePasteClick();
     this.handleStartClick();
-
-    add.onClick = (): void => {
-      optionList.add();
-    };
-    clear.onClick = (): void => {
-      optionList.clear();
-    };
-    save.onClick = (): void => {
-      optionList.saveToFile();
-    };
+    this.handleAddClick();
+    this.handleClearClick();
+    this.handleSaveClick();
   }
 }

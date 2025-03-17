@@ -10,6 +10,12 @@ enum SoundState {
 
 const LS_KEY_MUTED = 'dmt-0fef90dd-muted';
 
+//
+//-----------------------------
+// SoundToggler
+//-----------------------------
+//
+
 export class SoundToggler extends Button {
   private isMuted: boolean = false;
 

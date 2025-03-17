@@ -2,6 +2,7 @@ import { Button } from '../../components/base/button.ts';
 import { Element } from '../../components/base/element.ts';
 import { MessageBox } from '../../components/modal/message-box/message-box.ts';
 import { OptionList } from '../../components/option-list/option-list.ts';
+import { Endpoint, type Router } from '../../components/router/router.ts';
 import type { SliceData } from '../../components/wheel/wheel.ts';
 import { Wheel } from '../../components/wheel/wheel.ts';
 import { isPositiveInt } from '../../utils/misc.ts';
@@ -10,16 +11,13 @@ import { SoundToggler } from './sound-toggler.ts';
 import styles from './decision-picker.module.scss';
 
 const DURATION_INPUT_ID = 'duration-id';
-
 const DURATION_DEF_VALUE_SECS = 10;
 const DURATION_MIN_VALUE_SECS = 5;
 const DURATION_MAX_VALUE_SECS = 100;
 
 const ERR_NO_WINNER = 'Something went wrong. The winner is not determined!';
 
-const messageBox = new MessageBox();
-
-const wonSound = new Audio('../../../public/won.mp3');
+const wonSound = new Audio('./won.mp3');
 
 const buttonsData: Record<string, string> = {
   back: '↩ back',
@@ -34,7 +32,7 @@ const createWheel = (): Wheel | null => {
   return listData ? new Wheel({ options: listData.list }) : null;
 };
 
-const createDuration = (): [Element<HTMLDivElement>, Element<HTMLInputElement>] => {
+const createDurationElement = (): [Element<HTMLDivElement>, Element<HTMLInputElement>] => {
   const wrapper = new Element<HTMLDivElement>({ tag: 'div', className: styles.durationWrapper });
   const label = new Element<HTMLLabelElement>({ tag: 'label', className: styles.label });
 
@@ -43,9 +41,9 @@ const createDuration = (): [Element<HTMLDivElement>, Element<HTMLInputElement>] 
 
   const input = new Element<HTMLInputElement>({
     tag: 'input',
+    type: 'number',
     id: DURATION_INPUT_ID,
     className: styles.input,
-    type: 'number',
     min: DURATION_MIN_VALUE_SECS.toString(),
     value: DURATION_DEF_VALUE_SECS.toString(),
   });
@@ -56,35 +54,39 @@ const createDuration = (): [Element<HTMLDivElement>, Element<HTMLInputElement>] 
 };
 
 //
+//-----------------------------
 // DecisionPickerSection
+//-----------------------------
 //
 
 export class DecisionPickerSection extends Element {
+  private messageBox = new MessageBox();
   private wheel: Wheel | null = null;
   private duration: Element<HTMLInputElement>;
   private buttons: ButtonsMap = {};
 
-  constructor() {
+  constructor(private router: Router) {
     super({ tag: 'section' });
 
+    this.router = router;
     this.wheel = createWheel();
 
-    const [durationWrapper, durationInput] = createDuration();
+    const [durationWrapper, durationInput] = createDurationElement();
     this.duration = durationInput;
 
     const wrapper = new Element<HTMLDivElement>(
       { tag: 'div', className: styles.wrapper },
-      this.createButtons(),
+      this.createButtonsElement(),
       durationWrapper,
       this.wheel,
-      messageBox.underlyingElement
+      this.messageBox.parentModal
     );
 
     this.append(wrapper);
     this.addInteractivity();
   }
 
-  private createButtons(): Element<HTMLDivElement> {
+  private createButtonsElement(): Element<HTMLDivElement> {
     const buttons = Object.entries(buttonsData).map(([name, text]) => {
       const button =
         text === buttonsData.sound
@@ -102,12 +104,16 @@ export class DecisionPickerSection extends Element {
     return new Element<HTMLDivElement>({ tag: 'div', className: styles.btns }, ...buttons);
   }
 
-  private showWinner = (winner: SliceData | null): void => {
+  private isSoundedMuted(): boolean {
     const { sound } = this.buttons;
-    if (sound instanceof SoundToggler && !sound.muted) {
+    return sound instanceof SoundToggler && sound.muted;
+  }
+
+  private showWinner = (winner: SliceData | null): void => {
+    if (!this.isSoundedMuted()) {
       void wonSound.play();
     }
-    messageBox.show(winner ? `"${winner.title}" won! 🥳` : ERR_NO_WINNER);
+    this.messageBox.show(winner ? `"${winner.title}" won! 🥳` : ERR_NO_WINNER);
   };
 
   private handleDurationBlur(): void {
@@ -122,6 +128,13 @@ export class DecisionPickerSection extends Element {
         }
       }
     });
+  }
+
+  private handleBackClick(): void {
+    const { back } = this.buttons;
+    back.onClick = (): void => {
+      this.router.navigate(Endpoint.OptionList);
+    };
   }
 
   private handleStartClick(): void {
@@ -139,6 +152,7 @@ export class DecisionPickerSection extends Element {
 
   private addInteractivity(): void {
     this.handleStartClick();
+    this.handleBackClick();
     this.handleDurationBlur();
     this.handleWheelSpinFinish();
   }

@@ -1,0 +1,15 @@
+.wrapper {
+  @extend %wrapper;
+}
+
+.btn {
+  @extend %btn-primary;
+}
+
+.start-btn {
+  background-color: var(--color-accent);
+}
+
+.btns {
+  @extend %section-btns;
+}
