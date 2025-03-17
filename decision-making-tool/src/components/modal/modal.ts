@@ -1,23 +1,29 @@
 import type { BaseElement } from '../base/index.js';
 import { Button, Element } from '../base/index.js';
-import { scrollLock } from './scroll-lock.js';
 
 import styles from './modal.module.scss';
+import { scrollLock } from './scroll-lock.js';
 
 type OnCloseHandler = ((result: 'confirmed' | 'cancelled') => void) | null;
 
 enum ButtonText {
-  Ok = 'ok',
+  Ok = 'confirm',
   Cancel = 'cancel',
 }
 
-class Modal extends Element<HTMLDivElement> {
+//
+//-----------------------------
+// Modal
+//-----------------------------
+//
+
+export class Modal extends Element<HTMLDivElement> {
   private _content;
   private okBtn;
   private cancelBtn;
   private _onClose: OnCloseHandler = null;
 
-  constructor() {
+  public constructor() {
     super({ className: styles.backdrop });
 
     this._content = new Element<HTMLDivElement>({ tag: 'div', className: styles.content });
@@ -33,7 +39,13 @@ class Modal extends Element<HTMLDivElement> {
     this.append(
       new Element<HTMLDivElement>({ tag: 'div', className: styles.modal }, this._content, buttons)
     );
+
+    this.showCancelButton = false;
     this.addInteractivity();
+  }
+
+  public get buttonOK(): Button {
+    return this.okBtn;
   }
 
   public get content(): Element<HTMLDivElement> {
@@ -92,7 +104,3 @@ class Modal extends Element<HTMLDivElement> {
     return wasShown;
   }
 }
-
-const instance = new Modal();
-
-export const getModal = (): Modal => instance;

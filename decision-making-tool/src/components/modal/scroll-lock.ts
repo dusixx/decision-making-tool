@@ -22,7 +22,9 @@ const scrollLockStyle = (bodyCssText: string, windowTopY: number): string => {
 };
 
 //
+//-----------------------------
 // ScrollLock
+//-----------------------------
 //
 
 class ScrollLock {
