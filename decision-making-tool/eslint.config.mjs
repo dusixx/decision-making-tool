@@ -44,7 +44,6 @@ export default tseslint.config(
       reportUnusedDisableDirectives: true,
     },
     rules: {
-      // '@typescript-eslint/no-extraneous-class': 'off',
       'max-len': ['warn', { code: 100, tabWidth: 2 }],
       'max-lines-per-function': ['error', 40],
       'prettier/prettier': [
