@@ -3,6 +3,12 @@ import { createOption } from './create-option.ts';
 
 import styles from './option.module.scss';
 
+//
+//-----------------------------
+// Option
+//-----------------------------
+//
+
 export class Option extends Element<HTMLLIElement> {
   private optionId: number;
   private titleRef: Element<HTMLInputElement>;
