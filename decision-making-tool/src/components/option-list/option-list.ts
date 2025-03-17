@@ -13,7 +13,8 @@ import {
 import styles from './option-list.module.scss';
 
 export const LS_KEY_LIST = 'dmt-0fef90dd-list';
-const FILE_PREFIX = 'option-list';
+const FILE_PREFIX = 'options';
+const FILE_NAME = `${FILE_PREFIX}-dmt-0fef90dd`;
 const RE_CSV_LINE = /^(.*),([^,]*)$/;
 
 export type OptionData = {
@@ -81,7 +82,7 @@ export class OptionList extends Element<HTMLUListElement> {
   }
 
   public saveToFile(): void {
-    fileService.saveText(this.serialize(), `${FILE_PREFIX}-${Date.now().toString()}`);
+    fileService.saveText(this.serialize(), FILE_NAME);
   }
 
   public saveToLocalStorage(): void {
