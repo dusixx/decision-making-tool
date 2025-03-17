@@ -1,20 +1,22 @@
 import { getRndColorMixCss } from '../../utils/index.ts';
 import { Element } from '../base/element.ts';
 import type { OptionData } from '../option-list/option-list.ts';
-import { parseOptionsData } from './helpers.ts';
+import { getRndWheelSpeed, parseOptionsData, VALID_ITEMS_COUNT } from './helpers.ts';
 
 import styles from './wheel.module.scss';
 
-const NEEDLE_RADIUS_RATIO = 0.1;
-
 const PI2 = Math.PI * 2;
-const DEF_WHEEL_RADIUS = 250;
-const DEF_WHEEL_DURATION_SECS = 5;
-const WHEEL_SPIN_SPEED = 0.00015;
+const CANVAS_PADDING = 20;
 const LINE_WIDTH = 1;
 const STROKE_COLOR = 'white';
+
+const NEEDLE_RADIUS_RATIO = 0.1;
+const NEEDLE_COLOR = 'white';
+
+const WHEEL_DEF_RADIUS = 250;
+
 const CURSOR_POSITION = Math.PI * 1.5;
-const CANVAS_PADDING = 20;
+const CURSOR_COLOR = 'rgb(206, 20, 104)';
 
 const SLICE_TEXT_NEEDLE_OFFSET = 35;
 const SLICE_TEXT_VISIBILITY_ANGLE_THRESHOLD = 0.27;
@@ -24,9 +26,9 @@ const SLICE_TEXT_FONT = '15px sans-serif';
 const ERR_INVALID_CONTEXT =
   'The context id is not supported, or the canvas has already been set to a different context mode';
 
-const ERR_INVALID_OPTIONS_COUNT = 'Invalid options count';
+const ERR_INVALID_OPTIONS_COUNT = `There must be at least ${VALID_ITEMS_COUNT.toString()} options`;
 
-type SliceData = OptionData & {
+export type SliceData = OptionData & {
   startAngleRad: number;
   endAngleRad: number;
   color: string;
@@ -43,7 +45,9 @@ type Props = {
 };
 
 //
+//-----------------------------
 // Wheel
+//-----------------------------
 //
 
 export class Wheel extends Element<HTMLCanvasElement> {
@@ -54,7 +58,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
   private _onFinish: OnFinishHandler = null;
   private _currentSlice: SliceData | null = null;
 
-  constructor({ options, radius = DEF_WHEEL_RADIUS }: Props) {
+  constructor({ options, radius = WHEEL_DEF_RADIUS }: Props) {
     super({ tag: 'canvas', className: styles.canvas });
 
     this.radius = radius;
@@ -62,6 +66,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
 
     this.validateOptions(options);
     this.createSlicesFromOptions(options);
+
     this.createNeedle();
     this.createCursor();
   }
@@ -95,19 +100,21 @@ export class Wheel extends Element<HTMLCanvasElement> {
     this._onFinish = handler;
   }
 
-  public spin(durationSecs: number = DEF_WHEEL_DURATION_SECS): void {
+  public spin(durationSecs: number): void {
     const startTime = performance.now();
+    const speed = getRndWheelSpeed();
     let rafId: number;
     let angle = 0;
 
-    if (durationSecs < DEF_WHEEL_DURATION_SECS) {
-      durationSecs = DEF_WHEEL_DURATION_SECS;
-    }
     const durationMs = durationSecs * 1000;
 
     const animate = (): void => {
       const elapsed = performance.now() - startTime;
-      angle += WHEEL_SPIN_SPEED * (elapsed >= durationMs / 2 ? -1 : 1);
+
+      angle += speed * (elapsed >= durationMs / 2 ? -1 : 1);
+      // In case you switched tabs - the speed of Raf callback may be reduced,
+      // but the time will go as before
+      angle = angle < 0 ? 0 : angle;
 
       if (elapsed >= durationMs) {
         this._onFinish?.(this.currentSlice);
@@ -122,7 +129,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
     animate();
   }
 
-  public refresh(): void {
+  public repaint(): void {
     this.clearCanvas();
 
     for (const slice of this.slices) {
@@ -220,7 +227,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
     context.lineTo(cx, 5);
     context.lineTo(cx + 10, 0);
     context.lineTo(cx, 25);
-    context.fillStyle = `rgb(255, 0, 85)`;
+    context.fillStyle = CURSOR_COLOR;
     context.fill();
   }
 
@@ -232,7 +239,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
     } = this;
     context.beginPath();
     context.arc(cx, cy, radius * NEEDLE_RADIUS_RATIO, 0, PI2);
-    context.fillStyle = `white`;
+    context.fillStyle = NEEDLE_COLOR;
     context.lineTo(cx, cy);
     context.fill();
   }
