@@ -1,0 +1,15 @@
+.wrapper {
+  @extend %wrapper;
+
+  gap: 20px;
+}
+
+.btn {
+  @extend %btn-primary;
+}
+
+.para {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
