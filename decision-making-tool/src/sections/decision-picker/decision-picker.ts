@@ -6,7 +6,6 @@ import { Endpoint, type Router } from '../../components/router/router.ts';
 import type { SliceData } from '../../components/wheel/wheel.ts';
 import { Wheel } from '../../components/wheel/wheel.ts';
 import { Icons } from '../../constants/icons.ts';
-import { fitIntoRange, isPositiveInt } from '../../utils/misc.ts';
 import { SoundToggler } from './sound-toggler.ts';
 
 import { EVENT_APP_CONTENT_CHANGE } from '../../components/app/app.ts';
@@ -157,18 +156,8 @@ export class DecisionPickerSection extends Element {
   };
 
   private handleDurationBlur(): void {
-    this.duration.addListener('blur', ({ target }) => {
-      if (target instanceof HTMLInputElement) {
-        if (!isPositiveInt(target.value)) {
-          target.value = DURATION_DEF_VALUE.toString();
-        } else {
-          target.value = fitIntoRange(
-            target.value,
-            DURATION_MIN_VALUE,
-            DURATION_MAX_VALUE
-          ).toString();
-        }
-      }
+    this.duration.addListener('blur', () => {
+      this.duration.node.reportValidity();
     });
   }
 
@@ -191,8 +180,23 @@ export class DecisionPickerSection extends Element {
     this.duration.node.disabled = flag;
   }
 
+  private handleWheelOnFinish(): void {
+    if (this.wheel) {
+      this.wheel.onFinish = (winner): void => {
+        this.toggleControls(false);
+        this.pickedOption.node.style.backgroundColor = 'var(--color-picked-option-bg)';
+        this.showWinner(winner);
+      };
+    }
+  }
+
   private handleStartClick(): void {
+    this.handleWheelOnFinish();
+
     this.buttons.start.onClick = (): void => {
+      if (!this.duration.node.reportValidity()) {
+        return;
+      }
       this.pickedOption.node.style.backgroundColor = '';
       if (this.wheel) {
         this.pickedOption.node.value = this.wheel.currentSlice?.title ?? '';
@@ -200,13 +204,6 @@ export class DecisionPickerSection extends Element {
       this.toggleControls(true);
       this.wheel?.spin(Number(this.duration.node.value));
     };
-    if (this.wheel) {
-      this.wheel.onFinish = (winner): void => {
-        this.toggleControls(false);
-        this.pickedOption.node.style.backgroundColor = 'var( --color-picked-option-bg)';
-        this.showWinner(winner);
-      };
-    }
   }
 
   private handleAppContentChange(): void {
