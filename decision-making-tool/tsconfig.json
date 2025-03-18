@@ -5,7 +5,6 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    //"plugins": [{ "name": "typescript-tslint-plugin" }],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -20,9 +19,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    //
-    // https://github.com/rolling-scopes-school/tasks/blob/master/stage2/tasks/decision-making-tool/README.md#code-formatting-and-linting-80-points
-    // https://www.typescriptlang.org/tsconfig/#strict
+
     "strictBindCallApply": true,
     "strictBuiltinIteratorReturn": true,
     "strictFunctionTypes": true,

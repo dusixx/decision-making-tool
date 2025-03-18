@@ -6,10 +6,6 @@ import prettier from 'eslint-plugin-prettier';
 import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
 
-//
-// Config
-//
-
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,

@@ -1,5 +1,10 @@
 .wrapper {
   @extend %wrapper;
+
+  gap: 30px;
+  border-radius: var(--border-radius);
+  background-color: white;
+  box-shadow: var(--box-shaddow);
 }
 
 .sound-btn {
@@ -38,8 +43,24 @@
   text-align: center;
 
   &::placeholder {
-    opacity: 0.5;
+    opacity: 0.4;
   }
+}
+
+.picked-option {
+  @extend %text-input;
+
+  text-align: center;
+
+  &::placeholder {
+    opacity: 0.4;
+  }
+}
+
+.inputs {
+  @extend %section-btns;
+
+  gap: 10px;
 }
 
 .label {
@@ -52,6 +73,6 @@
   align-items: center;
 
   & label {
-    font-size: 26px;
+    font-size: 20px;
   }
 }

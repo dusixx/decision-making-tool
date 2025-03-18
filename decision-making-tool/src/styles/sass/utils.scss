@@ -26,7 +26,6 @@
 %wrapper {
   display: flex;
   flex-direction: column;
-  gap: 30px;
   align-items: center;
   justify-content: center;
 
@@ -53,7 +52,7 @@
   @extend %btn;
 
   height: 25px;
-  padding: 20px;
+  padding: 18px;
   border-radius: var(--border-radius);
 
   font-size: 15px;
@@ -84,17 +83,18 @@
   font-size: 15px;
 
   appearance: unset;
+  background-color: rgb(247 247 247);
   outline: none;
 
   &:focus-visible {
-    border: 1px solid rgb(78 169 255);
+    border: 1px solid var(--color-border-active);
   }
 }
 
 %section-btns {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: 20px;
   align-items: center;
   justify-content: center;
 

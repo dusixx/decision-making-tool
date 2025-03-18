@@ -1,6 +1,14 @@
 import type { OnErrorHandler, OnLoadHandler } from './file-loader.ts';
 import { FileLoader } from './file-loader.ts';
 
+//
+//-----------------------------
+//  FileService
+//-----------------------------
+//
+
+const DEF_FILE_TYPE = 'json';
+
 export class FileService {
   private static _instance = new FileService();
   private loader = FileLoader.instance;
@@ -18,7 +26,7 @@ export class FileService {
     this.loader.onError = handler;
   }
 
-  public saveText(content: string, fileName: string, fileType: string = 'json'): void {
+  public saveText(content: string, fileName: string, fileType: string = DEF_FILE_TYPE): void {
     const { link } = this;
     const file = new Blob([content], { type: 'text/plain' });
 

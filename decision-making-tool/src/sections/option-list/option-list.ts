@@ -9,6 +9,7 @@ import { OptionList } from '../../components/option-list/option-list.ts';
 import type { Router } from '../../components/router/router.ts';
 import { Endpoint } from '../../components/router/router.ts';
 import { parseOptionsData } from '../../components/wheel/helpers.ts';
+import { Icons } from '../../constants/icons.ts';
 
 import styles from './option-list.module.scss';
 
@@ -18,13 +19,15 @@ const buttonsData: Record<string, string> = {
   clear: 'clear list',
   save: 'save to file',
   load: 'load from file',
-  start: '🚀 start',
+  start: `${Icons.Rocket} start`,
 };
 
 type ButtonsMap = Record<keyof typeof buttonsData, Button>;
 
+const LOAD_FILE_TYPE = '.json';
+
 const ERR_INVALID_OPTIONS_COUNT = `Please add at least 2 valid options.
-  An option is considered valid if its title is not empty and its weight is greater than 0`;
+An option is considered valid if its title is not empty and its weight is greater than 0`;
 
 //
 //-----------------------------
@@ -36,14 +39,15 @@ export class OptionListSection extends Element {
   private messageBox: MessageBox;
   private fileService: FileService = FileService.instance;
   private optionList: OptionList = new OptionList();
-  private pasteList: PasteList = new PasteList();
+  private pasteList: PasteList;
   private buttons: ButtonsMap = {};
 
   constructor(private router: Router) {
     super({ tag: 'section' });
 
+    this.pasteList = new PasteList();
+    this.messageBox = new MessageBox();
     this.router = router;
-    this.messageBox = new MessageBox(this.pasteList.parentModal);
 
     const success = this.optionList.restoreFromLocalStorage();
     if (!success) {
@@ -57,8 +61,7 @@ export class OptionListSection extends Element {
     return new Element<HTMLDivElement>(
       { tag: 'div', className: styles.wrapper },
       this.createButtonsElement(),
-      this.optionList,
-      this.pasteList.parentModal
+      this.optionList
     );
   }
 
@@ -88,7 +91,7 @@ export class OptionListSection extends Element {
 
   private handleLoadClick(): void {
     this.buttons.load.onClick = (): void => {
-      this.fileService.browseForFile('.json');
+      this.fileService.browseForFile(LOAD_FILE_TYPE);
     };
     this.fileService.onLoad = (v: FileData): void => {
       if (typeof v === 'string') {
@@ -99,7 +102,7 @@ export class OptionListSection extends Element {
 
   private handleStartClick(): void {
     this.buttons.start.onClick = (): void => {
-      const parsed = parseOptionsData(this.optionList.getOptionsData());
+      const parsed = parseOptionsData(this.optionList.data);
       if (!parsed.isValid) {
         this.messageBox.show(ERR_INVALID_OPTIONS_COUNT);
         return;
@@ -127,6 +130,9 @@ export class OptionListSection extends Element {
   }
 
   private handleAppContentChange(): void {
+    window.addEventListener('beforeunload', () => {
+      this.optionList.saveToLocalStorage();
+    });
     document.addEventListener(EVENT_APP_CONTENT_CHANGE, () => {
       this.optionList.saveToLocalStorage();
     });

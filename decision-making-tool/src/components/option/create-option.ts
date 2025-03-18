@@ -9,6 +9,7 @@ const WEIGHT_MIN = 0;
 const TITLE_PLACEHOLDER = 'title';
 const WEIGHT_PLACEHOLDER = 'weight';
 const DELETE_BTN_TEXT = '✕';
+const DELETE_BTN_TITLE = 'delete';
 
 type OptionElements = {
   label: Element<HTMLLabelElement>;
@@ -53,7 +54,7 @@ export function createOption(id: number): OptionElements {
   const button = new Button({
     className: styles.deleteBtn,
     text: DELETE_BTN_TEXT,
-    title: 'delete',
+    title: DELETE_BTN_TITLE,
   });
   button.node.dataset.delete = id.toString();
 

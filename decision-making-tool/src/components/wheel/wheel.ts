@@ -1,6 +1,7 @@
-import { getRndColorMixCss } from '../../utils/index.ts';
+import { getRndColorMixCss, randomizeArray } from '../../utils/index.ts';
 import { Element } from '../base/element.ts';
 import type { OptionData } from '../option-list/option-list.ts';
+import type { ParseResult } from './helpers.ts';
 import { getRndWheelSpeed, parseOptionsData, VALID_ITEMS_COUNT } from './helpers.ts';
 
 import styles from './wheel.module.scss';
@@ -36,12 +37,20 @@ export type SliceData = OptionData & {
 
 type Point = { x: number; y: number };
 
-type OnFinishHandler = ((currentSlice: SliceData | null) => void) | null;
+type OnSlideChangeHandler = ((currentSlice: SliceData | null) => void) | null;
 
 type Props = {
   options: OptionData[];
   radius?: number;
   duration?: number;
+};
+
+const isCurrentSlice = (slice: SliceData): boolean => {
+  let { startAngleRad, endAngleRad } = slice;
+  startAngleRad = startAngleRad > PI2 ? startAngleRad % PI2 : startAngleRad;
+  endAngleRad = endAngleRad > PI2 ? endAngleRad % PI2 : endAngleRad;
+
+  return CURSOR_POSITION <= endAngleRad && CURSOR_POSITION >= startAngleRad;
 };
 
 //
@@ -55,7 +64,8 @@ export class Wheel extends Element<HTMLCanvasElement> {
   private slices: SliceData[] = [];
   private totalWeight: number = 0;
   private _radius: number = 0;
-  private _onFinish: OnFinishHandler = null;
+  private _onFinish: OnSlideChangeHandler = null;
+  private _onChange: OnSlideChangeHandler = null;
   private _currentSlice: SliceData | null = null;
   private _abort = false;
 
@@ -65,8 +75,8 @@ export class Wheel extends Element<HTMLCanvasElement> {
     this.radius = radius;
     this.context = this.getContext2D();
 
-    this.validateOptions(options);
-    this.createSlicesFromOptions(options);
+    const parseResult = this.parseOptions(options);
+    this.createSlicesFromOptions(parseResult.validOptions);
 
     this.createNeedle();
     this.createCursor();
@@ -97,8 +107,12 @@ export class Wheel extends Element<HTMLCanvasElement> {
     this._radius = v;
   }
 
-  public set onFinish(handler: OnFinishHandler) {
+  public set onFinish(handler: OnSlideChangeHandler) {
     this._onFinish = handler;
+  }
+
+  public set onChange(handler: OnSlideChangeHandler) {
+    this._onChange = handler;
   }
 
   public stop(): void {
@@ -117,8 +131,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
       const elapsed = performance.now() - startTime;
 
       angle += speed * (elapsed >= durationMs / 2 ? -1 : 1);
-      // In case you switched tabs - the speed of Raf callback may be reduced,
-      // but the time will go as before
+      // In case you switched tabs - the speed of Raf callback may be reduced
       angle = angle < 0 ? 0 : angle;
 
       if (elapsed >= durationMs || this._abort) {
@@ -142,10 +155,20 @@ export class Wheel extends Element<HTMLCanvasElement> {
 
     for (const slice of this.slices) {
       slice.color = getRndColorMixCss();
+      this.makeSlice(slice);
+    }
+  }
 
-      this.createSlice(slice);
-      this.createNeedle();
-      this.createCursor();
+  private makeSlice(slice: SliceData): void {
+    this.createSlice(slice);
+    this.createNeedle();
+    this.createCursor();
+  }
+
+  private setCurrentSlice(slice: SliceData): void {
+    if (isCurrentSlice(slice)) {
+      this._currentSlice = slice;
+      this._onChange?.(slice);
     }
   }
 
@@ -156,27 +179,19 @@ export class Wheel extends Element<HTMLCanvasElement> {
       slice.startAngleRad += angleDeltaRad;
       slice.endAngleRad += angleDeltaRad;
 
-      if (
-        CURSOR_POSITION <= slice.endAngleRad % PI2 &&
-        CURSOR_POSITION >= slice.startAngleRad % PI2
-      ) {
-        this._currentSlice = slice;
-      }
-
-      this.createSlice(slice);
-      this.createNeedle();
-      this.createCursor();
+      this.setCurrentSlice(slice);
+      this.makeSlice(slice);
     }
   }
 
-  private validateOptions(options: OptionData[]): number {
-    const { isValid, totalWeight } = parseOptionsData(options);
-    if (!isValid) {
+  private parseOptions(options: OptionData[]): ParseResult {
+    const result = parseOptionsData(options);
+    if (!result.isValid) {
       throw RangeError(ERR_INVALID_OPTIONS_COUNT);
     }
-    this.totalWeight = totalWeight;
+    this.totalWeight = result.totalWeight;
 
-    return totalWeight;
+    return result;
   }
 
   private createSlicesFromOptions(options: OptionData[]): void {
@@ -184,14 +199,12 @@ export class Wheel extends Element<HTMLCanvasElement> {
     this.slices = [];
 
     let startAngleRad: number = 0;
+    const randomizedOptions = randomizeArray<OptionData>(options);
 
-    for (const item of options) {
+    for (const item of randomizedOptions) {
       const itemAngleRad = (PI2 * item.weight) / this.totalWeight;
       const endAngleRad = startAngleRad + itemAngleRad;
 
-      if (item.weight && !item.title) {
-        continue;
-      }
       const slice = {
         ...item,
         startAngleRad,
@@ -199,6 +212,7 @@ export class Wheel extends Element<HTMLCanvasElement> {
         color: getRndColorMixCss(),
       };
 
+      this.setCurrentSlice(slice);
       this.createSlice(slice);
       this.slices.push(slice);
 

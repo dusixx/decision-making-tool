@@ -31,3 +31,12 @@ export const fitIntoRange = (v: number | string, min: number, max: number): numb
   }
   return Number(v);
 };
+
+export const randomizeArray = <T>(array: T[], count: number = array.length): T[] => {
+  const a = [...array];
+
+  return Array.from(
+    { length: Math.min(count, a.length) },
+    () => a.splice(rndInt(0, a.length - 1), 1)[0]
+  );
+};

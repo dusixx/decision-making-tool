@@ -7,7 +7,9 @@ export type OnLoadHandler = ((v: FileData) => void) | null;
 export type OnErrorHandler = (() => void) | null;
 
 //
-// FileLoader
+//-----------------------------
+//  FileLoader
+//-----------------------------
 //
 
 export class FileLoader extends Element<HTMLInputElement> {

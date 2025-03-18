@@ -2,6 +2,12 @@
   @extend %wrapper;
 
   gap: 20px;
+
+  width: 400px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+
+  background-color: white;
 }
 
 .btn {
@@ -10,6 +16,6 @@
 
 .para {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
 }

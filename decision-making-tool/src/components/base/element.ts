@@ -18,7 +18,7 @@ export class Element<T extends HTMLElement = HTMLElement> extends BaseElement<T>
     style.pointerEvents = flag ? '' : 'none';
   }
 
-  public dispatch(eventType: string, options: EventInit): boolean {
+  public dispatch(eventType: string, options?: EventInit): boolean {
     return this.node.dispatchEvent(
       new Event(eventType, {
         bubbles: true,
@@ -31,7 +31,7 @@ export class Element<T extends HTMLElement = HTMLElement> extends BaseElement<T>
   public dispatchCustom(
     eventType: string,
     detail: Record<string, unknown>,
-    options: EventInit
+    options?: EventInit
   ): boolean {
     return this.node.dispatchEvent(
       new CustomEvent(eventType, {

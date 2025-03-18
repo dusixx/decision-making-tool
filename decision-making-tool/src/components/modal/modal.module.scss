@@ -1,6 +1,6 @@
 .backdrop {
   position: fixed;
-  z-index: 1000;
+  z-index: var(--backdrop-zindex);
   top: 0;
   left: 0;
 
@@ -13,8 +13,6 @@
 
   background-color: var(--color-backdrop-bg);
 
-  // overflow: scroll;
-
   @include hidden(true) {
     opacity: 0;
   }
@@ -25,11 +23,6 @@
   @include hidden(false) {
     opacity: 1;
   }
-}
-
-.scroll-lock {
-  scrollbar-gutter: stable;
-  overflow: hidden;
 }
 
 .modal {
@@ -47,18 +40,6 @@
   color: var(--color-text);
 
   background-color: var(--color-bg);
-
-  &__para {
-    width: 100%;
-    text-align: center;
-    word-wrap: break-word;
-  }
-
-  &__icon {
-    width: 40px;
-    height: 40px;
-    fill: var(--color-modal-reward);
-  }
 }
 
 .content {

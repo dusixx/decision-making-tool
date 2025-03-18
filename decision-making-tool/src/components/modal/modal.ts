@@ -1,8 +1,8 @@
 import type { BaseElement } from '../base/index.js';
 import { Button, Element } from '../base/index.js';
+import { scrollLock } from './scroll-lock.js';
 
 import styles from './modal.module.scss';
-import { scrollLock } from './scroll-lock.js';
 
 type OnCloseHandler = ((result: 'confirmed' | 'cancelled') => void) | null;
 
@@ -91,6 +91,8 @@ export class Modal extends Element<HTMLDivElement> {
 
   private toggle(force: boolean): boolean {
     const wasShown = this.toggleClass(styles.active, force);
+
+    console.log('here');
 
     scrollLock.toggle(wasShown);
 

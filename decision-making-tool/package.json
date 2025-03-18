@@ -11,6 +11,7 @@
     "format": "npx prettier . --write --list-different --ignore-unknown",
     "lint": "eslint ./src",
     "lint:fix": "npm run lint --fix",
+    "stylelint": "stylelint \"**/*.{css,scss}\"",
     "stylelint:fix": "stylelint \"**/*.{css,scss}\" --fix",
     "lint:fix-all": "(npm run stylelint:fix) || true && npm run lint:fix",
     "prepare": "cd .. && husky ./decision-making-tool/.husky",

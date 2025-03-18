@@ -81,6 +81,7 @@ export abstract class BaseElement<T extends HTMLElement = HTMLElement> {
 
   public removeChildByRef(reference: BaseElement): void {
     this._children = this._children.filter((item) => item !== reference);
+    reference.remove();
   }
 
   public remove(): void {

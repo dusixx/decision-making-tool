@@ -14,7 +14,6 @@ const PLACEHOLDER = 'Paste a list of new options in a CSV-like format';
 //
 
 export class PasteList {
-  private modal = new Modal();
   private textArea: Element<HTMLTextAreaElement>;
   private _onConfirm: OnConfirmHandler = null;
 
@@ -24,11 +23,6 @@ export class PasteList {
       className: styles.text,
       placeholder: PLACEHOLDER,
     });
-    this.addInteractivity();
-  }
-
-  public get parentModal(): Modal {
-    return this.modal;
   }
 
   public set onConfirm(handler: OnConfirmHandler) {
@@ -36,19 +30,25 @@ export class PasteList {
   }
 
   public show(): void {
-    this.modal.showCancelButton = true;
+    const modal = new Modal();
+    modal.showCancelButton = true;
+
+    this.handleModalClose(modal);
+    document.body.append(modal.node);
+
     this.textArea.node.value = '';
-    this.modal.show(this.textArea);
+    modal.show(this.textArea);
   }
 
-  private addInteractivity(): void {
-    this.modal.onClose = (result): void => {
+  private handleModalClose(modal: Modal): void {
+    modal.onClose = (result): void => {
       const { value } = this.textArea.node;
       this.textArea.node.value = '';
 
       if (result === 'confirmed') {
         this._onConfirm?.(value);
       }
+      modal.node.remove();
     };
   }
 }

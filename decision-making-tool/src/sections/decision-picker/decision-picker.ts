@@ -5,6 +5,7 @@ import { OptionList } from '../../components/option-list/option-list.ts';
 import { Endpoint, type Router } from '../../components/router/router.ts';
 import type { SliceData } from '../../components/wheel/wheel.ts';
 import { Wheel } from '../../components/wheel/wheel.ts';
+import { Icons } from '../../constants/icons.ts';
 import { fitIntoRange, isPositiveInt } from '../../utils/misc.ts';
 import { SoundToggler } from './sound-toggler.ts';
 
@@ -14,17 +15,19 @@ import styles from './decision-picker.module.scss';
 const DURATION_INPUT_ID = 'duration-id';
 const DURATION_DEF_VALUE = 10;
 const DURATION_MIN_VALUE = 5;
-const DURATION_MAX_VALUE = 60;
+const DURATION_MAX_VALUE = 30;
 
 const ERR_NO_WINNER = 'Something went wrong. The winner is not determined!';
 
-const wonSound = new Audio('./won.mp3');
+const SOUND_OF_VICTORY = new Audio('./won.mp3');
+
+const INVITATION_MESSAGE = 'Press start button';
 
 const buttonsData: Record<string, string> = {
-  back: '↩ back',
+  back: `${Icons.LeftArrow} back`,
   sound: 'sound',
-  repaint: '🎨',
-  start: '🚀 start',
+  repaint: Icons.Palette,
+  start: `${Icons.Rocket} start`,
 };
 
 type ButtonsMap = Record<keyof typeof buttonsData, Button>;
@@ -36,15 +39,19 @@ type ButtonsMap = Record<keyof typeof buttonsData, Button>;
 //
 
 const createWheel = (): Wheel | null => {
-  const listData = OptionList.getFromLocalStorage();
-  return listData ? new Wheel({ options: listData.list }) : null;
+  try {
+    const listData = OptionList.getFromLocalStorage();
+    return listData && new Wheel({ options: listData.list });
+  } catch {
+    return null;
+  }
 };
 
 const createDurationElement = (): [Element<HTMLDivElement>, Element<HTMLInputElement>] => {
   const wrapper = new Element<HTMLDivElement>({ tag: 'div', className: styles.durationWrapper });
   const label = new Element<HTMLLabelElement>({ tag: 'label', className: styles.label });
 
-  label.text = '⏱️';
+  label.text = Icons.Stopwatch;
   label.node.htmlFor = DURATION_INPUT_ID;
 
   const input = new Element<HTMLInputElement>({
@@ -62,6 +69,16 @@ const createDurationElement = (): [Element<HTMLDivElement>, Element<HTMLInputEle
   return [wrapper, input];
 };
 
+const createPickedOptionElement = (): Element<HTMLInputElement> => {
+  return new Element<HTMLInputElement>({
+    tag: 'input',
+    placeholder: INVITATION_MESSAGE,
+    className: styles.pickedOption,
+    readOnly: true,
+    disabled: true,
+  });
+};
+
 //
 //-----------------------------
 // DecisionPickerSection
@@ -72,6 +89,7 @@ export class DecisionPickerSection extends Element {
   private messageBox = new MessageBox();
   private wheel: Wheel | null = null;
   private duration: Element<HTMLInputElement>;
+  private pickedOption: Element<HTMLInputElement>;
   private buttons: ButtonsMap = {};
 
   constructor(private router: Router) {
@@ -83,12 +101,18 @@ export class DecisionPickerSection extends Element {
     const [durationWrapper, durationInput] = createDurationElement();
     this.duration = durationInput;
 
+    this.pickedOption = createPickedOptionElement();
+    const inputsWrapper = new Element<HTMLDivElement>(
+      { tag: 'div', className: styles.inputs },
+      durationWrapper,
+      this.pickedOption
+    );
+
     const wrapper = new Element<HTMLDivElement>(
       { tag: 'div', className: styles.wrapper },
       this.createButtonsElement(),
-      durationWrapper,
-      this.wheel,
-      this.messageBox.parentModal
+      inputsWrapper,
+      this.wheel
     );
 
     this.append(wrapper);
@@ -122,10 +146,12 @@ export class DecisionPickerSection extends Element {
 
   private showWinner = (winner: SliceData | null): void => {
     if (!this.isSoundMuted()) {
-      void wonSound.play();
+      void SOUND_OF_VICTORY.play();
     }
     this.messageBox.show(
-      winner ? `#${winner.id.toString()} "${winner.title}" won! 🥳` : ERR_NO_WINNER
+      winner
+        ? `#${winner.id.toString()} "${winner.title}" won! ${Icons.PartyingFace}`
+        : ERR_NO_WINNER
     );
   };
 
@@ -159,18 +185,24 @@ export class DecisionPickerSection extends Element {
     };
   }
 
-  private handleStartClick(): void {
-    const { start, repaint } = this.buttons;
+  private toggleControls(flag: boolean): void {
+    Object.values(this.buttons).forEach((button) => (button.disabled = flag));
+    this.duration.node.disabled = flag;
+  }
 
-    start.onClick = (): void => {
-      start.disabled = true;
-      repaint.disabled = true;
+  private handleStartClick(): void {
+    this.buttons.start.onClick = (): void => {
+      this.pickedOption.node.style.backgroundColor = '';
+      if (this.wheel) {
+        this.pickedOption.node.value = this.wheel.currentSlice?.title ?? '';
+      }
+      this.toggleControls(true);
       this.wheel?.spin(Number(this.duration.node.value));
     };
     if (this.wheel) {
       this.wheel.onFinish = (winner): void => {
-        start.disabled = false;
-        repaint.disabled = false;
+        this.toggleControls(false);
+        this.pickedOption.node.style.backgroundColor = 'var( --color-picked-option-bg)';
         this.showWinner(winner);
       };
     }
@@ -182,7 +214,16 @@ export class DecisionPickerSection extends Element {
     });
   }
 
+  private handleSlideChange(): void {
+    if (this.wheel) {
+      this.wheel.onChange = (slice): void => {
+        this.pickedOption.node.value = slice?.title ?? '';
+      };
+    }
+  }
+
   private addInteractivity(): void {
+    this.handleSlideChange();
     this.handleRepaintClick();
     this.handleAppContentChange();
     this.handleStartClick();

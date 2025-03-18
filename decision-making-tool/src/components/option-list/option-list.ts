@@ -13,8 +13,10 @@ import {
 import styles from './option-list.module.scss';
 
 export const LS_KEY_LIST = 'dmt-0fef90dd-list';
+
 const FILE_PREFIX = 'options';
 const FILE_NAME = `${FILE_PREFIX}-dmt-0fef90dd`;
+
 const RE_CSV_LINE = /^(.*),([^,]*)$/;
 
 export type OptionData = {
@@ -27,8 +29,6 @@ export type ListData = {
   list: OptionData[];
   lastId: number;
 };
-
-const fileService = FileService.instance;
 
 //
 //-----------------------------
@@ -43,6 +43,14 @@ export class OptionList extends Element<HTMLUListElement> {
   constructor() {
     super({ tag: 'ul', className: styles.list });
     this.addInteractivity();
+  }
+
+  public get data(): OptionData[] {
+    return [...this.optionsMap].map(([id, { title, weight }]) => {
+      const weightNumber = isValidWeight(weight) ? Number(weight) : 0;
+
+      return { id, title, weight: weightNumber };
+    });
   }
 
   public static getFromLocalStorage = (): ListData | null => {
@@ -68,7 +76,7 @@ export class OptionList extends Element<HTMLUListElement> {
     }
     this.removeChildByRef(option);
     this.optionsMap.delete(id);
-    option.remove();
+    // option.remove();
 
     if (this.optionsMap.size === 0) {
       this.lastId = 1;
@@ -82,7 +90,7 @@ export class OptionList extends Element<HTMLUListElement> {
   }
 
   public saveToFile(): void {
-    fileService.saveText(this.serialize(), FILE_NAME);
+    FileService.instance.saveText(this.serialize(), FILE_NAME);
   }
 
   public saveToLocalStorage(): void {
@@ -126,14 +134,6 @@ export class OptionList extends Element<HTMLUListElement> {
     this.append(...options);
   }
 
-  public getOptionsData(): OptionData[] {
-    return [...this.optionsMap].map(([id, { title, weight }]) => {
-      const weightNumber = isValidWeight(weight) ? Number(weight) : 0;
-
-      return { id, title, weight: weightNumber };
-    });
-  }
-
   private createOption = ({ id, title, weight }: OptionData): Option => {
     const option = new Option(id);
 
@@ -156,18 +156,22 @@ export class OptionList extends Element<HTMLUListElement> {
 
   private serialize(): string {
     return JSON.stringify({
-      list: this.getOptionsData(),
+      list: this.data,
       lastId: this.lastId,
     });
   }
 
-  private addInteractivity(): void {
+  private handleOptionListClick(): void {
     this.addListener('click', (event) => {
       const id = getPressedDeleteButtonId(event);
       if (id != null) {
         this.delete(Number(id));
       }
     });
+  }
+
+  private addInteractivity(): void {
+    this.handleOptionListClick();
   }
 
   private getItemById(id: number): Element<HTMLLIElement> | undefined {

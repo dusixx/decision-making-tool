@@ -1,9 +1,11 @@
 import { Element } from '../../components/base/element.ts';
+import { Icons } from '../../constants/icons.ts';
 import { getRndColorMixCss } from '../../utils/color.ts';
 
 import styles from './header.module.scss';
 
-const LOGO_TEXT = 'Dmt🍀!@#$';
+const LOGO_TEXT = `Dmt${Icons.FourLeafClover}!@#$`;
+const BASE_COLOR = '#ff43f7';
 
 export class Logo extends Element<HTMLDivElement> {
   constructor() {
@@ -11,7 +13,7 @@ export class Logo extends Element<HTMLDivElement> {
 
     const letters = [...LOGO_TEXT].map((text) => {
       const span = new Element<HTMLSpanElement>({ tag: 'span', text });
-      span.node.style.color = getRndColorMixCss({ baseColor: '#ff43f7' });
+      span.node.style.color = getRndColorMixCss({ baseColor: BASE_COLOR });
 
       return span;
     });

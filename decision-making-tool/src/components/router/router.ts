@@ -1,12 +1,16 @@
 export enum Endpoint {
   OptionList = '/',
   DecisionPicker = '/decision-picker',
+  Index = '/index',
+  NotFound = '/{404}',
 }
 
 export type RouteData = {
   pathname: string;
   callback: () => void;
 };
+
+export const EVENT_MATCH_ROUTE = 'matchroute';
 
 type OnLocationChangeHandler = ((v: Location) => void) | null;
 
@@ -29,16 +33,17 @@ const observeLocationPathnameChange = (handler: OnLocationChangeHandler): void =
 //
 
 export class Router {
-  public static NOT_FOUND_PAGE = '/{404}';
+  public static NOT_FOUND_PAGE = Endpoint.NotFound;
   private _onLocationChange: OnLocationChangeHandler = null;
 
   constructor(private routes: RouteData[]) {
     observeLocationPathnameChange(this._onLocationChange);
 
-    document.addEventListener('DOMContentLoaded', () => {
-      this.matchRoute(location.pathname);
-    });
     this.handlePopstate();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      this.navigate(location.pathname);
+    });
   }
 
   public set onLocationChange(handler: OnLocationChangeHandler | null) {
@@ -51,12 +56,18 @@ export class Router {
 
   private handlePopstate(): void {
     window.addEventListener('popstate', () => {
-      console.log('popstate');
       this.navigate(location.pathname);
     });
   }
 
   private matchRoute(pathname: string, replace: boolean = false): void {
+    pathname = pathname.match(/\/[^/]*$/)?.[0] ?? '/';
+
+    document.dispatchEvent(
+      new CustomEvent(EVENT_MATCH_ROUTE, {
+        detail: pathname,
+      })
+    );
     const found = this.routes.find((route) => {
       return route.pathname.toLowerCase() === pathname.toLowerCase();
     });
@@ -69,7 +80,7 @@ export class Router {
       return;
     }
     const page404 = this.routes.find((route) => {
-      return route.pathname.toLowerCase() === Router.NOT_FOUND_PAGE;
+      return route.pathname.toLowerCase() === Router.NOT_FOUND_PAGE.toLowerCase();
     });
     page404?.callback();
   }

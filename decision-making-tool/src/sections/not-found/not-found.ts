@@ -1,11 +1,12 @@
 import { Button } from '../../components/base/button.ts';
 import { Element } from '../../components/base/element.ts';
 import { Endpoint, type Router } from '../../components/router/router.ts';
+import { Icons } from '../../constants/icons.ts';
 
 import styles from './not-found.module.scss';
 
-const BTN_TEXT = '↩ back to main';
-const PARA_TEXT = 'Page not found';
+const BUTTON_TEXT = `${Icons.House} go to list`;
+const PARA_TEXT = 'page was not found :(';
 
 //
 //-----------------------------
@@ -26,7 +27,7 @@ export class NotFoundSection extends Element {
       className: styles.para,
     });
 
-    this.button = new Button({ text: BTN_TEXT, className: styles.btn });
+    this.button = new Button({ text: BUTTON_TEXT, className: styles.btn });
 
     const wrapper = new Element<HTMLDivElement>(
       { tag: 'div', className: styles.wrapper },

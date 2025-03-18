@@ -8,13 +8,13 @@
 .label {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
 
   width: 5%;
 
   font-size: 14px;
 
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .title {
@@ -45,12 +45,12 @@
   @extend %btn;
 
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 
   width: 5%;
 
   font-size: 18px;
 
-  opacity: 0.5;
+  opacity: 0.3;
   background-color: transparent;
 }

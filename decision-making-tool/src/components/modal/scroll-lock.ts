@@ -13,12 +13,12 @@ const isVScrollBarVisible = (): boolean => {
 
 const scrollLockStyle = (bodyCssText: string, windowTopY: number): string => {
   return `
-        ${bodyCssText};
-        position: fixed;
-        top: -${windowTopY.toString()}px;
-        width: 100%;
-        overflow-y: ${isVScrollBarVisible() ? `scroll` : `hidden`};
-      `;
+    ${bodyCssText};
+    position: fixed;
+    top: -${windowTopY.toString()}px;
+    width: 100%;
+    overflow-y: ${isVScrollBarVisible() ? `scroll` : `hidden`};
+  `;
 };
 
 //

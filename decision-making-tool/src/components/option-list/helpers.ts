@@ -1,6 +1,7 @@
 import { isPositiveInt } from '../../utils/misc.ts';
 import type { ListData } from './option-list.ts';
 
+const DELETE_BTN_SELECTOR = '[data-delete]';
 const RE_EMPTY_LINES = /^(?:[\t ]*(?:\r?\n|\r))+/;
 const RE_EOL = /\r?\n|\r/;
 
@@ -8,7 +9,7 @@ export const getPressedDeleteButtonId = ({ target }: Event): number | undefined 
   if (!(target instanceof HTMLElement)) {
     return;
   }
-  const deleteButton = target.closest<HTMLButtonElement>('[data-delete]');
+  const deleteButton = target.closest<HTMLButtonElement>(DELETE_BTN_SELECTOR);
   if (!deleteButton) {
     return;
   }

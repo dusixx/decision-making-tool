@@ -1,9 +1,14 @@
-import { HeaderSection } from '../../sections/header/header.ts';
-import { DecisionPickerSection, OptionListSection } from '../../sections/index.ts';
-import { NotFoundSection } from '../../sections/not-found/not-found.ts';
+import {
+  DecisionPickerSection,
+  HeaderSection,
+  NotFoundSection,
+  OptionListSection,
+} from '../../sections/index.ts';
+
 import { Element } from '../base/element.ts';
 import type { RouteData } from '../router/router.ts';
-import { Router } from '../router/router.ts';
+import { Endpoint, Router } from '../router/router.ts';
+import { isOptionsDataValid } from '../wheel/helpers.ts';
 
 export const EVENT_APP_CONTENT_CHANGE = 'appcontentchange';
 
@@ -18,7 +23,6 @@ class MainSection extends Element {
 
   constructor() {
     super({ tag: 'main' });
-
     this.router = new Router(this.createRoutes());
   }
 
@@ -27,19 +31,34 @@ class MainSection extends Element {
     this.append(content);
   }
 
+  private dispatchContentChange(): void {
+    this.dispatch(EVENT_APP_CONTENT_CHANGE);
+  }
+
   private createRoutes(): RouteData[] {
     return [
       {
-        pathname: '/decision-picker',
+        pathname: Endpoint.DecisionPicker,
         callback: (): void => {
-          document.dispatchEvent(new Event(EVENT_APP_CONTENT_CHANGE));
+          if (!isOptionsDataValid()) {
+            this.router.navigate(Endpoint.OptionList);
+            return;
+          }
+          this.dispatchContentChange();
           this.setContent(new DecisionPickerSection(this.router));
         },
       },
       {
-        pathname: '/',
+        pathname: Endpoint.OptionList,
         callback: (): void => {
-          document.dispatchEvent(new Event(EVENT_APP_CONTENT_CHANGE));
+          this.dispatchContentChange();
+          this.setContent(new OptionListSection(this.router));
+        },
+      },
+      {
+        pathname: Endpoint.Index,
+        callback: (): void => {
+          this.dispatchContentChange();
           this.setContent(new OptionListSection(this.router));
         },
       },

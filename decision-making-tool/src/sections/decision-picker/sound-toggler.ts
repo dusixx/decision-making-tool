@@ -1,12 +1,8 @@
 import { Button } from '../../components/base/button.ts';
+import { Icons } from '../../constants/icons.ts';
 import { JSONParse } from '../../utils/misc.ts';
 
 import styles from './decision-picker.module.scss';
-
-enum SoundState {
-  Unmuted = '🔊',
-  Muted = '🔇',
-}
 
 const LS_KEY_MUTED = 'dmt-0fef90dd-muted';
 
@@ -40,7 +36,7 @@ export class SoundToggler extends Button {
   }
 
   private update(): void {
-    this.node.textContent = this.isMuted ? SoundState.Muted : SoundState.Unmuted;
+    this.node.textContent = this.isMuted ? Icons.Muted : Icons.Unmuted;
   }
 
   private toggle(): void {

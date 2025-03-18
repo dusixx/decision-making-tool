@@ -18,3 +18,22 @@ input[type='number']::-webkit-inner-spin-button {
 input[type='number'] {
   appearance: textfield;
 }
+
+:root {
+  --color-text: rgb(31 31 31);
+  --color-bg: rgb(241 241 241);
+  --color-accent: rgb(206 20 104);
+  --color-backdrop-bg: rgb(89 89 89 / 50%);
+  --color-btn-bg: rgb(9 96 218);
+  --color-btn: white;
+  --color-border: rgb(219 219 219 / 60%);
+  --color-border-active: rgb(78 169 255);
+  --color-picked-option-bg: rgb(224 236 222);
+  --box-shaddow: 0 1px 1px 1px var(--color-border);
+  --border-radius: 20px;
+  --border-radius-sm: 6px;
+  --max-width: 1280px;
+  --wrapper-max-width: 750px;
+  --wrapper-min-width: 400px;
+  --backdrop-zindex: 1000;
+}
