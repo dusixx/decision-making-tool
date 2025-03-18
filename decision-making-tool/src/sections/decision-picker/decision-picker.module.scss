@@ -12,7 +12,7 @@
 
   min-width: 60px;
   font-size: 18px;
-  background-color: rgb(253 224 163);
+  background-color: rgb(255 229 164);
 }
 
 .repaint-btn {
@@ -20,7 +20,7 @@
 
   min-width: 60px;
   font-size: 18px;
-  background-color: rgb(207 220 255);
+  background-color: rgb(185 218 255);
 }
 
 .btn {
@@ -53,6 +53,7 @@
 
   padding-right: 20px;
   padding-left: 20px;
+  font-weight: bold;
   text-align: center;
 
   &::placeholder {
