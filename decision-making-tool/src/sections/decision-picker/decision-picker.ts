@@ -62,6 +62,7 @@ const createDurationElement = (): [Element<HTMLDivElement>, Element<HTMLInputEle
     min: DURATION_MIN_VALUE.toString(),
     max: DURATION_MAX_VALUE.toString(),
     value: DURATION_DEF_VALUE.toString(),
+    required: true,
   });
 
   wrapper.append(label, input);
@@ -180,7 +181,7 @@ export class DecisionPickerSection extends Element {
     this.duration.node.disabled = flag;
   }
 
-  private handleWheelOnFinish(): void {
+  private handleWheelSpinFinish(): void {
     if (this.wheel) {
       this.wheel.onFinish = (winner): void => {
         this.toggleControls(false);
@@ -191,7 +192,7 @@ export class DecisionPickerSection extends Element {
   }
 
   private handleStartClick(): void {
-    this.handleWheelOnFinish();
+    this.handleWheelSpinFinish();
 
     this.buttons.start.onClick = (): void => {
       if (!this.duration.node.reportValidity()) {
