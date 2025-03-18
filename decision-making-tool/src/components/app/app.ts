@@ -40,11 +40,12 @@ class MainSection extends Element {
       {
         pathname: Endpoint.DecisionPicker,
         callback: (): void => {
+          this.dispatchContentChange();
+
           if (!isOptionsDataValid()) {
             this.router.navigate(Endpoint.OptionList);
             return;
           }
-          this.dispatchContentChange();
           this.setContent(new DecisionPickerSection(this.router));
         },
       },

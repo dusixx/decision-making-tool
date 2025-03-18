@@ -59,8 +59,9 @@ const createDurationElement = (): [Element<HTMLDivElement>, Element<HTMLInputEle
     type: 'number',
     title: 'duration',
     id: DURATION_INPUT_ID,
-    className: styles.input,
+    className: styles.duration,
     min: DURATION_MIN_VALUE.toString(),
+    max: DURATION_MAX_VALUE.toString(),
     value: DURATION_DEF_VALUE.toString(),
   });
 

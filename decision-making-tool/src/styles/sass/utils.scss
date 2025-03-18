@@ -65,8 +65,9 @@
 
   &:disabled {
     @include non-interactive {
-      opacity: 0.5;
-      filter: grayscale(0.2);
+      opacity: 0.4;
+
+      // filter: grayscale(0.2);
     }
   }
 }
