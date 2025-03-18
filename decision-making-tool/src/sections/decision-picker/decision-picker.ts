@@ -176,7 +176,7 @@ export class DecisionPickerSection extends Element {
     };
   }
 
-  private toggleControls(flag: boolean): void {
+  private disableControls(flag: boolean): void {
     Object.values(this.buttons).forEach((button) => (button.disabled = flag));
     this.duration.node.disabled = flag;
   }
@@ -184,7 +184,7 @@ export class DecisionPickerSection extends Element {
   private handleWheelSpinFinish(): void {
     if (this.wheel) {
       this.wheel.onFinish = (winner): void => {
-        this.toggleControls(false);
+        this.disableControls(false);
         this.pickedOption.node.style.backgroundColor = 'var(--color-picked-option-bg)';
         this.showWinner(winner);
       };
@@ -202,7 +202,7 @@ export class DecisionPickerSection extends Element {
       if (this.wheel) {
         this.pickedOption.node.value = this.wheel.currentSlice?.title ?? '';
       }
-      this.toggleControls(true);
+      this.disableControls(true);
       this.wheel?.spin(Number(this.duration.node.value));
     };
   }

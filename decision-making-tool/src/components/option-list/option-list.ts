@@ -1,7 +1,7 @@
 import { JSONParse } from '../../utils/index.ts';
 import { Element } from '../base/index.ts';
 import { FileService } from '../file-service/file-service.ts';
-import { Option } from '../option/option.ts';
+import { Option } from '../option-list/option/option.ts';
 
 import {
   getPressedDeleteButtonId,

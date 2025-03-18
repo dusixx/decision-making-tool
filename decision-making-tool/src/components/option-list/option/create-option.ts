@@ -1,4 +1,4 @@
-import { Button, Element } from '../base/index.ts';
+import { Button, Element } from '../../base/index.ts';
 
 import styles from './option.module.scss';
 
@@ -24,7 +24,7 @@ type OptionElements = {
 //-----------------------------
 //
 
-export function createOption(id: number): OptionElements {
+export function createOptionElement(id: number): OptionElements {
   const optionId = `option-#${id.toString()}`;
 
   const label = new Element<HTMLLabelElement>({
