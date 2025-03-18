@@ -57,6 +57,10 @@ export class OptionListSection extends Element {
     this.addInteractivity();
   }
 
+  public isValidOptionsData(): boolean {
+    return parseOptionsData(this.optionList.data).isValid;
+  }
+
   private createWrapperElement(): Element<HTMLDivElement> {
     return new Element<HTMLDivElement>(
       { tag: 'div', className: styles.wrapper },
@@ -102,8 +106,7 @@ export class OptionListSection extends Element {
 
   private handleStartClick(): void {
     this.buttons.start.onClick = (): void => {
-      const parsed = parseOptionsData(this.optionList.data);
-      if (!parsed.isValid) {
+      if (!this.isValidOptionsData()) {
         this.messageBox.show(ERR_INVALID_OPTIONS_COUNT);
         return;
       }

@@ -16,7 +16,6 @@ export const LS_KEY_LIST = 'dmt-0fef90dd-list';
 
 const FILE_PREFIX = 'options';
 const FILE_NAME = `${FILE_PREFIX}-dmt-0fef90dd`;
-
 const RE_CSV_LINE = /^(.*),([^,]*)$/;
 
 export type OptionData = {
@@ -76,7 +75,6 @@ export class OptionList extends Element<HTMLUListElement> {
     }
     this.removeChildByRef(option);
     this.optionsMap.delete(id);
-    // option.remove();
 
     if (this.optionsMap.size === 0) {
       this.lastId = 1;
