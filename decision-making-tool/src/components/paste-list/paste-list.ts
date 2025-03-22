@@ -27,7 +27,12 @@ export class PasteList {
   }
 
   public show(): void {
-    this.modal = new Modal({
+    this.modal = this.createModal();
+    this.modal.open();
+  }
+
+  private createModal(): Modal {
+    return new Modal({
       content: this._textArea,
       showCancelButton: true,
 
@@ -40,7 +45,6 @@ export class PasteList {
         }
       },
     });
-    this.modal.open();
   }
 
   private handleTextAreaKeydown(): void {
