@@ -1,7 +1,9 @@
 .option {
   display: flex;
+  gap: 4px;
   align-items: center;
   justify-content: space-between;
+
   width: 100%;
 }
 
@@ -10,9 +12,10 @@
   align-items: center;
   justify-content: center;
 
-  width: 5%;
+  width: 7%;
 
-  font-size: 14px;
+  font-size: 13px;
+  letter-spacing: -1px;
 
   opacity: 0.4;
 }

@@ -28,7 +28,7 @@ const SHADOW_COLOR = 'rgb(170 170 170)';
 const SLICE_TEXT_NEEDLE_OFFSET = 25;
 const SLICE_TEXT_VISIBILITY_ANGLE_THRESHOLD = 0.27;
 const SLICE_TEXT_COLOR = 'rgb(40 40 40)';
-const SLICE_TEXT_FONT = '15px sans-serif';
+const SLICE_TEXT_FONT = '16px sans-serif';
 const SLICE_TEXT_BASELINE = 'middle';
 
 const ERR_INVALID_CONTEXT =
@@ -38,7 +38,7 @@ export type SliceData = OptionData & {
   startAngleRad: number;
   endAngleRad: number;
   color: string;
-  sliceText?: string;
+  sliceText: string;
 };
 
 type Point = { x: number; y: number };

@@ -1,45 +1,37 @@
+import { Endpoint } from '../../components/app/routes.ts';
 import { Button } from '../../components/base/button.ts';
 import { Element } from '../../components/base/element.ts';
-import { Endpoint, type Router } from '../../components/router/router.ts';
-import { Icons } from '../../constants/icons.ts';
+import { div, paragraph } from '../../components/base/tags.ts';
+import { Icon } from '../../constants/index.ts';
+import { type Router } from '../../router/router.ts';
 
 import styles from './not-found.module.scss';
 
-const BUTTON_TEXT = `${Icons.House} go to list`;
-const PARA_TEXT = 'page was not found :(';
+const BUTTON_TEXT = `${Icon.House} go to list`;
 
-//
-//-----------------------------
-// NotFoundSection
-//-----------------------------
-//
+const NOT_FOUND_TEXT = 'page was not found :(';
 
 export class NotFoundSection extends Element {
   private button: Button;
-  private para: Element<HTMLParagraphElement>;
+  private notFoundText: ReturnType<typeof paragraph>;
 
   constructor(private router: Router) {
     super({ tag: 'section' });
 
-    this.para = new Element<HTMLParagraphElement>({
-      tag: 'p',
-      text: PARA_TEXT,
+    this.notFoundText = paragraph({
+      text: NOT_FOUND_TEXT,
       className: styles.para,
     });
 
     this.button = new Button({ text: BUTTON_TEXT, className: styles.btn });
 
-    const wrapper = new Element<HTMLDivElement>(
-      { tag: 'div', className: styles.wrapper },
-      this.para,
-      this.button
-    );
+    const wrapper = div({ className: styles.wrapper }, this.notFoundText, this.button);
 
     this.append(wrapper);
-    this.addInteractivity();
+    this.init();
   }
 
-  private addInteractivity(): void {
+  private init(): void {
     this.button.onClick = (): void => {
       this.router.navigate(Endpoint.OptionList, true);
     };

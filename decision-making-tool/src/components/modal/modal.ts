@@ -1,108 +1,118 @@
-import type { BaseElement } from '../base/index.js';
-import { Button, Element } from '../base/index.js';
-import { scrollLock } from './scroll-lock.js';
+import type { Button } from '../base/index.js';
+import { Element } from '../base/index.js';
+import type { div } from './../base/tags';
+import { scrollLock } from './utils/scroll-lock.js';
+
+import { KeyboardEventKey, Visibility } from '../../constants/index.js';
+import { isKeyPressed } from '../../utils/misc.js';
+import type { ModalContent, ModalProps, ModalResult, OnCloseModalHandler } from './types.js';
+import { createElements } from './utils/create-elements.js';
 
 import styles from './modal.module.scss';
 
-type OnCloseHandler = ((result: 'confirmed' | 'cancelled') => void) | null;
-
-enum ButtonText {
-  Ok = 'confirm',
-  Cancel = 'cancel',
-}
-
-//
-//-----------------------------
-// Modal
-//-----------------------------
-//
+const { body } = document;
 
 export class Modal extends Element<HTMLDivElement> {
-  private _content;
-  private okBtn;
-  private cancelBtn;
-  private _onClose: OnCloseHandler = null;
+  private _root: ReturnType<typeof div>;
+  private contentRoot: ReturnType<typeof div>;
+  private okButton: Button;
+  private cancelButton: Button;
+  private _onClose: OnCloseModalHandler = null;
 
-  public constructor() {
+  public constructor({ content, showCancelButton = true, onClose = null }: ModalProps) {
     super({ className: styles.backdrop });
 
-    this._content = new Element<HTMLDivElement>({ tag: 'div', className: styles.content });
-    this.okBtn = new Button({ className: styles.btn, text: ButtonText.Ok });
-    this.cancelBtn = new Button({ className: styles.btn, text: ButtonText.Cancel });
+    const { contentContainer, okButton, cancelButton, modalRoot } = createElements();
 
-    const buttons = new Element<HTMLDivElement>(
-      { tag: 'div', className: styles.buttons },
-      this.cancelBtn,
-      this.okBtn
-    );
+    this._root = modalRoot;
+    this.contentRoot = contentContainer;
+    this.okButton = okButton;
+    this.cancelButton = cancelButton;
+    this.onClose = onClose;
 
-    this.append(
-      new Element<HTMLDivElement>({ tag: 'div', className: styles.modal }, this._content, buttons)
-    );
-
-    this.showCancelButton = false;
-    this.addInteractivity();
+    this.setContent(content);
+    this.showCancelButton(showCancelButton);
+    this.append(modalRoot);
+    this.init();
   }
 
-  public get buttonOK(): Button {
-    return this.okBtn;
+  public get root(): ReturnType<typeof div> {
+    return this._root;
   }
 
-  public get content(): Element<HTMLDivElement> {
-    return this._content;
-  }
-
-  public get showCancelButton(): boolean {
-    return /none/i.test(this.cancelBtn.node.style.display);
-  }
-
-  public set showCancelButton(flag: boolean) {
-    this.cancelBtn.node.style.display = flag ? '' : 'none';
-  }
-
-  public set onClose(handler: OnCloseHandler) {
+  public set onClose(handler: OnCloseModalHandler) {
     this._onClose = handler;
   }
 
-  public override show(...children: BaseElement[]): void {
-    this.content.removeChildren();
-    this.content.append(...children);
-
+  public open(): void {
     this.toggle(true);
   }
 
-  private handleClick = ({ target, currentTarget }: Event): void => {
-    if (target !== currentTarget && target !== this.okBtn.node && target !== this.cancelBtn.node) {
-      return;
-    }
+  public close(result: ModalResult): void {
     this.toggle(false);
-    this._onClose?.(target === this.okBtn.node ? 'confirmed' : 'cancelled');
-  };
-
-  private addInteractivity(): void {
-    this.addListener('click', this.handleClick);
+    this._onClose?.(result);
   }
 
-  private handleKeydown = ({ key, ctrlKey, altKey, shiftKey }: KeyboardEvent): void => {
-    if (key === 'Escape' && !ctrlKey && !altKey && !shiftKey) {
+  private setContent(content: ModalContent): void {
+    this.contentRoot.removeChildren();
+    if (typeof content === 'string') {
+      this.contentRoot.node.insertAdjacentHTML('beforeend', content);
+    } else {
+      this.contentRoot.append(content);
+    }
+  }
+
+  private showCancelButton(flag: boolean): void {
+    this.cancelButton.node.style.display = flag ? '' : Visibility.None;
+  }
+
+  private init(): void {
+    this.addListener('click', (event) => {
+      this.handleBackdropClick(event);
+      this.handleButtonClick(event);
+    });
+  }
+
+  private handleBackdropClick({ target, currentTarget }: Event): void {
+    if (target === currentTarget) {
+      this.close('cancelled');
+    }
+  }
+
+  private handleButtonClick = ({ target }: Event): void => {
+    if (target instanceof HTMLButtonElement) {
+      this._onClose?.(target === this.okButton.node ? 'confirmed' : 'cancelled');
       this.toggle(false);
     }
   };
 
+  private handleDocumentKeydown = (event: KeyboardEvent): void => {
+    if (isKeyPressed(KeyboardEventKey.Escape, event)) {
+      this.toggle(false);
+    }
+  };
+
+  private render(flag: boolean): void {
+    if (flag) {
+      body.append(this.node);
+      return;
+    }
+    this.remove();
+  }
+
   private toggle(force: boolean): boolean {
     const wasShown = this.toggleClass(styles.active, force);
-
-    console.log('here');
-
     scrollLock.toggle(wasShown);
 
     if (wasShown) {
-      document.addEventListener('keydown', this.handleKeydown, {
+      document.addEventListener('keydown', this.handleDocumentKeydown, {
         once: true,
       });
     } else {
-      document.removeEventListener('keydown', this.handleKeydown);
+      document.removeEventListener('keydown', this.handleDocumentKeydown);
     }
+    this.render(wasShown);
+
     return wasShown;
   }
 }

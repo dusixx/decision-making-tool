@@ -1,15 +1,9 @@
-import type { BaseElementProps } from '../../utils/create-element.ts';
-import { createElement } from '../../utils/create-element.ts';
+import type { BaseElementProps } from './create-element.ts';
+import { createElement } from './create-element.ts';
 
-//
-//-----------------------------
-//  BaseElement
-//-----------------------------
-//
-
-export abstract class BaseElement<T extends HTMLElement = HTMLElement> {
+export class BaseElement<T extends HTMLElement = HTMLElement> {
+  protected _children: BaseElement[] = [];
   private _node: T;
-  private _children: BaseElement[] = [];
 
   constructor(props?: BaseElementProps<T>, ...children: (BaseElement | null)[]) {
     const { tag = 'div', text = '', ...rest } = props ?? {};
@@ -59,24 +53,16 @@ export abstract class BaseElement<T extends HTMLElement = HTMLElement> {
     });
   }
 
-  public addListener(
-    event: keyof HTMLElementEventMap,
-    listener: EventListenerOrEventListenerObject,
-    options: AddEventListenerOptions | boolean = false
-  ): void {
-    this.node.addEventListener(event, listener, options);
+  public addListener(...rest: Parameters<typeof this._node.addEventListener>): void {
+    this.node.addEventListener(...rest);
   }
 
-  public removeListener(
-    event: keyof HTMLElementEventMap,
-    listener: EventListenerOrEventListenerObject,
-    options: AddEventListenerOptions | boolean = false
-  ): void {
-    this._node.removeEventListener(event, listener, options);
+  public removeListener(...rest: Parameters<typeof this._node.removeEventListener>): void {
+    this.node.removeEventListener(...rest);
   }
 
-  public toggleClass(name: string, force?: boolean): boolean {
-    return this.node.classList.toggle(name, force);
+  public toggleClass(className: string, force?: boolean): boolean {
+    return this.node.classList.toggle(className, force);
   }
 
   public removeChildByRef(reference: BaseElement): void {

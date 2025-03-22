@@ -1,87 +1,47 @@
-import { EVENT_APP_CONTENT_CHANGE } from '../../components/app/app.ts';
-import { Button } from '../../components/base/button.ts';
+import { Endpoint } from '../../components/app/routes.ts';
 import { Element } from '../../components/base/element.ts';
-import type { FileData } from '../../components/file-service/file-loader.ts';
-import { FileService } from '../../components/file-service/file-service.ts';
-import { MessageBox } from '../../components/modal/message-box/message-box.ts';
-import { PasteList } from '../../components/modal/paste-list/paste-list.ts';
+import { JSONFileService } from '../../components/json-file-service/json-file-service.ts';
+import type { FileData } from '../../components/json-file-service/types.ts';
+import { showModalMessage } from '../../components/modal/utils/show-modal-message.ts';
 import { OptionList } from '../../components/option-list/option-list.ts';
-import type { Router } from '../../components/router/router.ts';
-import { Endpoint } from '../../components/router/router.ts';
-import { parseOptionsData } from '../../components/wheel/helpers.ts';
-import { Icons } from '../../constants/icons.ts';
+import { PasteList } from '../../components/paste-list/paste-list.ts';
+import { EventType } from '../../constants/index.ts';
+import type { Router } from '../../router/router.ts';
+import type { OptionListSectionButtonsMap } from './utils/create-elements.ts';
+import { createElements } from './utils/create-elements.ts';
+import { parseOptionsData } from './utils/misc.ts';
 
-import styles from './option-list.module.scss';
-
-const buttonsData: Record<string, string> = {
-  add: 'add item',
-  paste: 'paste list',
-  clear: 'clear list',
-  save: 'save to file',
-  load: 'load from file',
-  start: `${Icons.Rocket} start`,
-};
-
-type ButtonsMap = Record<keyof typeof buttonsData, Button>;
-
-const LOAD_FILE_TYPE = '.json';
-
-const ERR_INVALID_OPTIONS_COUNT = `Please add at least 2 valid options.
-An option is considered valid if its title is not empty and its weight is greater than 0`;
-
-//
-//-----------------------------
-//  OptionListSection
-//-----------------------------
-//
+const ERR_INVALID_OPTIONS_COUNT = `<p style='text-align:center;word-break: normal'>
+  Please add at least 2 valid options.
+  An option is considered valid if its title is not empty and its weight is greater than 0</p>`;
 
 export class OptionListSection extends Element {
-  private messageBox: MessageBox;
-  private fileService: FileService = FileService.instance;
+  private fileService: JSONFileService = new JSONFileService();
   private optionList: OptionList = new OptionList();
   private pasteList: PasteList;
-  private buttons: ButtonsMap = {};
+  private buttons: OptionListSectionButtonsMap = {};
 
   constructor(private router: Router) {
     super({ tag: 'section' });
 
     this.pasteList = new PasteList();
-    this.messageBox = new MessageBox();
     this.router = router;
 
     const success = this.optionList.restoreFromLocalStorage();
     if (!success) {
       this.optionList.add();
     }
-    this.append(this.createWrapperElement());
-    this.addInteractivity();
+
+    const { wrapper, buttonsMap } = createElements();
+    this.buttons = buttonsMap;
+    wrapper.append(this.optionList);
+
+    this.append(wrapper);
+    this.init();
   }
 
-  public isValidOptionsData(): boolean {
+  public isOptionsDataValid(): boolean {
     return parseOptionsData(this.optionList.data).isValid;
-  }
-
-  private createWrapperElement(): Element<HTMLDivElement> {
-    return new Element<HTMLDivElement>(
-      { tag: 'div', className: styles.wrapper },
-      this.createButtonsElement(),
-      this.optionList
-    );
-  }
-
-  private createButtonsElement(): Element<HTMLDivElement> {
-    const buttons = Object.entries(buttonsData).map(([name, text]) => {
-      const button = new Button({ className: styles.btn, text });
-
-      if (button.text === buttonsData.start) {
-        button.toggleClass(styles.startBtn);
-      }
-      this.buttons[name] = button;
-
-      return button;
-    });
-
-    return new Element<HTMLDivElement>({ tag: 'div', className: styles.btns }, ...buttons);
   }
 
   private handlePasteClick(): void {
@@ -95,7 +55,7 @@ export class OptionListSection extends Element {
 
   private handleLoadClick(): void {
     this.buttons.load.onClick = (): void => {
-      this.fileService.browseForFile(LOAD_FILE_TYPE);
+      this.fileService.load();
     };
     this.fileService.onLoad = (v: FileData): void => {
       if (typeof v === 'string') {
@@ -106,8 +66,8 @@ export class OptionListSection extends Element {
 
   private handleStartClick(): void {
     this.buttons.start.onClick = (): void => {
-      if (!this.isValidOptionsData()) {
-        this.messageBox.show(ERR_INVALID_OPTIONS_COUNT);
+      if (!this.isOptionsDataValid()) {
+        showModalMessage(ERR_INVALID_OPTIONS_COUNT);
         return;
       }
       this.router.navigate(Endpoint.DecisionPicker);
@@ -136,12 +96,12 @@ export class OptionListSection extends Element {
     window.addEventListener('beforeunload', () => {
       this.optionList.saveToLocalStorage();
     });
-    document.addEventListener(EVENT_APP_CONTENT_CHANGE, () => {
+    document.addEventListener(EventType.BeforeContentChange, () => {
       this.optionList.saveToLocalStorage();
     });
   }
 
-  private addInteractivity(): void {
+  private init(): void {
     this.handleAppContentChange();
     this.handleLoadClick();
     this.handlePasteClick();

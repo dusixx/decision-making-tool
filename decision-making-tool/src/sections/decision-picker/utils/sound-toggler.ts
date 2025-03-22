@@ -1,22 +1,17 @@
-import { Button } from '../../components/base/button.ts';
-import { Icons } from '../../constants/icons.ts';
-import { JSONParse } from '../../utils/misc.ts';
+import { Button } from '../../../components/base/button.ts';
+import { Icon } from '../../../constants/index.ts';
+import { JSONParse } from '../../../utils/misc.ts';
 
-import styles from './decision-picker.module.scss';
+import styles from '../decision-picker.module.scss';
 
 const LS_KEY_MUTED = 'dmt-0fef90dd-muted';
-
-//
-//-----------------------------
-// SoundToggler
-//-----------------------------
-//
+const BUTTON_TITLE = 'sound on/off';
 
 export class SoundToggler extends Button {
   private isMuted: boolean = false;
 
   constructor() {
-    super({ className: styles.soundBtn, title: 'sound on/off' });
+    super({ className: styles.soundBtn, title: BUTTON_TITLE });
 
     this.init();
 
@@ -36,7 +31,7 @@ export class SoundToggler extends Button {
   }
 
   private update(): void {
-    this.node.textContent = this.isMuted ? Icons.Muted : Icons.Unmuted;
+    this.node.textContent = this.isMuted ? Icon.Muted : Icon.Unmuted;
   }
 
   private toggle(): void {

@@ -1,25 +1,18 @@
-import type { BaseElementProps } from '../../utils/create-element.js';
-import type { BaseElement } from './base-element.js';
+import type { BaseElementProps } from './create-element.js';
 import { Element } from './element.js';
 
-type EventHandler = ((event: Event) => void) | null;
-
-//
-//-----------------------------
-//  Button
-//-----------------------------
-//
-
 export class Button extends Element<HTMLButtonElement> {
-  private _onClick: EventHandler = null;
+  private _onClick: EventListener | null = null;
 
-  constructor(props: BaseElementProps<HTMLButtonElement>, ...children: BaseElement[]) {
+  constructor(props: BaseElementProps<HTMLButtonElement>, ...children: Element[]) {
     super({ tag: 'button', type: 'button', ...props }, ...children);
 
-    this.addListener('click', (event: Event) => this._onClick?.(event));
+    this.addListener('click', (event: Event) => {
+      this._onClick?.(event);
+    });
   }
 
-  public get onClick(): EventHandler {
+  public get onClick(): EventListener | null {
     return this._onClick;
   }
 
@@ -27,7 +20,7 @@ export class Button extends Element<HTMLButtonElement> {
     return this.node.disabled;
   }
 
-  public set onClick(handler: EventHandler) {
+  public set onClick(handler: EventListener | null) {
     this._onClick = handler;
   }
 

@@ -1,22 +1,23 @@
 import { JSONParse } from '../../utils/index.ts';
 import { Element } from '../base/index.ts';
-import { FileService } from '../file-service/file-service.ts';
+import { JSONFileService } from '../json-file-service/json-file-service.ts';
 import { Option } from '../option-list/option/option.ts';
 
 import {
+  getOptionListFromLocalStorage,
   getPressedDeleteButtonId,
   isLikeListData,
   isValidWeight,
+  LS_KEY_LIST,
   normalizeCSV,
-} from './helpers.ts';
+} from './utils/misc.ts';
 
 import styles from './option-list.module.scss';
 
-export const LS_KEY_LIST = 'dmt-0fef90dd-list';
-
 const FILE_PREFIX = 'options';
 const FILE_NAME = `${FILE_PREFIX}-dmt-0fef90dd`;
-const RE_CSV_LINE = /^(.*),([^,]*)$/;
+const RE_CSV_LINE = /^(?<title>.*),(?<weight>[^,]*)$/;
+const INITIAL_ID = 1;
 
 export type OptionData = {
   id: number;
@@ -29,19 +30,14 @@ export type ListData = {
   lastId: number;
 };
 
-//
-//-----------------------------
-// OptionList
-//-----------------------------
-//
-
 export class OptionList extends Element<HTMLUListElement> {
-  private lastId = 1;
+  private lastId = INITIAL_ID;
+  private fileService = new JSONFileService();
   private optionsMap: Map<number, Option> = new Map();
 
   constructor() {
     super({ tag: 'ul', className: styles.list });
-    this.addInteractivity();
+    this.init();
   }
 
   public get data(): OptionData[] {
@@ -53,10 +49,7 @@ export class OptionList extends Element<HTMLUListElement> {
   }
 
   public static getFromLocalStorage = (): ListData | null => {
-    const txt = localStorage.getItem(LS_KEY_LIST);
-    const data = JSONParse(txt ?? '');
-
-    return isLikeListData(data) ? data : null;
+    return getOptionListFromLocalStorage();
   };
 
   public add(title: string = '', weight: number = 0): Option {
@@ -77,18 +70,18 @@ export class OptionList extends Element<HTMLUListElement> {
     this.optionsMap.delete(id);
 
     if (this.optionsMap.size === 0) {
-      this.lastId = 1;
+      this.lastId = INITIAL_ID;
     }
   }
 
   public clear(): void {
     this.optionsMap.clear();
     this.removeChildren();
-    this.lastId = 1;
+    this.lastId = INITIAL_ID;
   }
 
   public saveToFile(): void {
-    FileService.instance.saveText(this.serialize(), FILE_NAME);
+    this.fileService.save(this.serialize(), FILE_NAME);
   }
 
   public saveToLocalStorage(): void {
@@ -121,7 +114,10 @@ export class OptionList extends Element<HTMLUListElement> {
       if (!match) {
         return null;
       }
-      const [, title, weight] = match;
+      let [, title, weight] = match;
+
+      title = title.trim();
+      weight = weight.trim();
 
       if (!weight || isValidWeight(weight)) {
         return this.add(title, Number(weight));
@@ -168,7 +164,7 @@ export class OptionList extends Element<HTMLUListElement> {
     });
   }
 
-  private addInteractivity(): void {
+  private init(): void {
     this.handleOptionListClick();
   }
 

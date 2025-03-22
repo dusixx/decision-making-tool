@@ -1,9 +1,11 @@
-import { isPositiveInt } from '../../utils/misc.ts';
-import type { ListData } from './option-list.ts';
+import { isPositiveInt, JSONParse } from '../../../utils/misc.ts';
+import { type ListData } from '../option-list.ts';
+
+export const LS_KEY_LIST = 'dmt-0fef90dd-list';
 
 const DELETE_BTN_SELECTOR = '[data-delete]';
-const RE_EMPTY_LINES = /^(?:[\t ]*(?:\r?\n|\r))+/;
-const RE_EOL = /\r?\n|\r/;
+
+const RE_END_OF_LINE = /\r?\n|\r/;
 
 export const getPressedDeleteButtonId = ({ target }: Event): number | undefined => {
   if (!(target instanceof HTMLElement)) {
@@ -27,14 +29,17 @@ export const isLikeListData = (v: unknown): v is ListData => {
 };
 
 export const normalizeCSV = (txt: string): string[] | null => {
-  const lines = txt
-    .replace(RE_EMPTY_LINES, '')
-    .split(RE_EOL)
-    .filter((line) => line.includes(','));
-
+  const lines = txt.split(RE_END_OF_LINE).filter((line) => line.includes(','));
   return lines.length ? lines : null;
 };
 
 export const isValidWeight = (weight: string | number): boolean => {
   return isPositiveInt(weight) && weight > 0;
+};
+
+export const getOptionListFromLocalStorage = (): ListData | null => {
+  const txt = localStorage.getItem(LS_KEY_LIST);
+  const data = JSONParse(txt ?? '');
+
+  return isLikeListData(data) ? data : null;
 };

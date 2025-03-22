@@ -1,8 +1,9 @@
 .wrapper {
   @extend %wrapper;
 
-  gap: 30px;
-  border-radius: var(--border-radius);
+  @extend %underline;
+
+  gap: 25px;
   background-color: white;
   box-shadow: var(--box-shaddow);
 }
@@ -72,4 +73,19 @@
   & label {
     font-size: 20px;
   }
+}
+
+.victory-message {
+  text-align: center;
+  word-break: break-all;
+}
+
+.winner-id {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0 2px;
+
+  font-size: 14px;
+  letter-spacing: -0.5px;
 }

@@ -19,13 +19,14 @@ export const createSlicesFromOptions = (
   const randomizedOptions = randomizeArray<OptionData>(options);
 
   for (const item of randomizedOptions) {
-    const itemAngleRad = (PI2 * item.weight) / totalWeight;
+    const itemAngleRad = PI2 * (item.weight / totalWeight);
     const endAngleRad = startAngleRad + itemAngleRad;
 
     const slice = {
       ...item,
       startAngleRad,
       endAngleRad,
+      sliceText: '',
       color: getRndColorMixCss(),
     };
     slices.push(slice);
@@ -45,6 +46,8 @@ export const getRndWheelSpeed = (
 export const isCurrentSlice = (slice: SliceData): boolean => {
   return CURSOR_POSITION_RAD <= slice.endAngleRad && CURSOR_POSITION_RAD >= slice.startAngleRad;
 };
+
+export const radToDeg = (rad: number): number => rad * (180 / Math.PI);
 
 export const updateSliceAngles = (slice: SliceData, angleDeltaRad: number): void => {
   let { startAngleRad: start, endAngleRad: end } = slice;

@@ -19,9 +19,15 @@ input[type='number'] {
   appearance: textfield;
 }
 
+p {
+  margin: 0;
+}
+
 :root {
   --color-text: rgb(53 53 53);
-  --color-bg: rgb(235 235 235);
+  --color-bg: rgb(235 235 235 / 90%);
+  --color-bg-sec: rgb(232 233 238);
+  --color-bg-sec-60: rgb(232 233 238 / 60%);
   --color-modal-bg: rgb(246 246 246);
   --color-accent: rgb(206 20 104);
   --color-accent-20: rgb(206 20 104 / 20%);
@@ -32,7 +38,7 @@ input[type='number'] {
   --color-border: rgb(219 219 219 / 60%);
   --color-border-active: rgb(78 169 255);
   --color-picked-option-bg: #e6f9d3;
-  --box-shaddow: 0 1px 1px 1px var(--color-border);
+  --box-shaddow: 0 1px 1px 1px rgb(203 203 203/ 70%);
   --border-radius: 20px;
   --border-radius-sm: 6px;
   --max-width: 1280px;

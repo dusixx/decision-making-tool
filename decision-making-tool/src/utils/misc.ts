@@ -1,3 +1,5 @@
+import type { KeyboardEventKey } from '../constants/index.ts';
+
 export const genId = (): string => {
   return Math.random().toString(24).slice(2);
 };
@@ -39,4 +41,9 @@ export const randomizeArray = <T>(array: T[], count: number = array.length): T[]
     { length: Math.min(count, a.length) },
     () => a.splice(rndInt(0, a.length - 1), 1)[0]
   );
+};
+
+export const isKeyPressed = (key: KeyboardEventKey, event: KeyboardEvent): boolean => {
+  const { key: k, ctrlKey: ctrl, altKey: alt, shiftKey: shift } = event;
+  return k === key.toString() && !ctrl && !alt && !shift;
 };
