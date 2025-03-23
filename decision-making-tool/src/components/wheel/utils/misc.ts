@@ -7,8 +7,8 @@ export const PI2 = Math.PI * 2;
 const CURSOR_POSITION_RAD = Math.PI * 1.5;
 
 enum WheelSpin {
-  MinSpeed = 20,
-  MaxSpeed = 35,
+  MinSpeed = 25,
+  MaxSpeed = 45,
   SpeedRatio = 1e5,
 }
 
@@ -16,8 +16,8 @@ export const createSlicesFromOptions = (
   options: OptionData[],
   totalWeight: number
 ): SliceData[] => {
-  const slices: SliceData[] = [];
   let startAngleRad: number = 0;
+  const slices: SliceData[] = [];
   const randomizedOptions = randomizeArray<OptionData>(options);
 
   for (const item of randomizedOptions) {
@@ -28,7 +28,7 @@ export const createSlicesFromOptions = (
       ...item,
       startAngleRad,
       endAngleRad,
-      sliceText: '',
+      shortenedTitle: '',
       color: getRndColorMixCss(),
     };
     slices.push(slice);
@@ -46,10 +46,14 @@ export const getRndWheelSpeed = (
 };
 
 export const isCurrentSlice = (slice: SliceData): boolean => {
-  return CURSOR_POSITION_RAD <= slice.endAngleRad && CURSOR_POSITION_RAD >= slice.startAngleRad;
-};
+  let { startAngleRad: start, endAngleRad: end } = slice;
 
-export const radToDeg = (rad: number): number => rad * (180 / Math.PI);
+  if (end > PI2 && start > CURSOR_POSITION_RAD) {
+    start -= PI2;
+    end -= PI2;
+  }
+  return CURSOR_POSITION_RAD <= end && CURSOR_POSITION_RAD >= start;
+};
 
 export const updateSliceAngles = (slice: SliceData, angleDeltaRad: number): void => {
   let { startAngleRad: start, endAngleRad: end } = slice;
