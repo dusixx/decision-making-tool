@@ -1,6 +1,6 @@
-import type { Router } from '../../router/router.ts';
-import { DecisionPickerSection, NotFoundSection, OptionListSection } from '../../sections/index.ts';
-import type { Element } from '../base/element.ts';
+import type { Element } from '../components/base/element.ts';
+import type { Router } from '../router/router.ts';
+import { DecisionPickerSection, NotFoundSection, OptionListSection } from '../sections/index.ts';
 
 export enum Endpoint {
   OptionList = '/',

@@ -4,16 +4,13 @@ import { createElements } from './utils/create-elements.ts';
 import styles from './option.module.scss';
 
 export class Option extends Element<HTMLLIElement> {
-  private optionId: number;
   private titleRef: Element<HTMLInputElement>;
   private weightRef: Element<HTMLInputElement>;
 
-  constructor(id: number) {
+  constructor(public id: number) {
     super({ tag: 'li', className: styles.option });
 
     const { label, title, weight, button } = createElements(id);
-
-    this.optionId = id;
     this.titleRef = title;
     this.weightRef = weight;
 
@@ -25,10 +22,6 @@ export class Option extends Element<HTMLLIElement> {
     this.weightRef.addListener('focus', () => {
       this.weightRef.node.select();
     });
-  }
-
-  public get id(): number {
-    return this.optionId;
   }
 
   public get title(): string {

@@ -6,6 +6,7 @@ export const LS_KEY_LIST = 'dmt-0fef90dd-list';
 const DELETE_BTN_SELECTOR = '[data-delete]';
 
 const RE_END_OF_LINE = /\r?\n|\r/;
+const RE_CSV_LINE = /^(?<title>.*),(?<weight>[^,]*)$/;
 
 export const getPressedDeleteButtonId = ({ target }: Event): number | undefined => {
   if (!(target instanceof HTMLElement)) {
@@ -28,9 +29,22 @@ export const isLikeListData = (v: unknown): v is ListData => {
   );
 };
 
-export const normalizeCSV = (txt: string): string[] | null => {
+export const normalizeCSVText = (txt: string): string[] | null => {
   const lines = txt.split(RE_END_OF_LINE).filter((line) => line.includes(','));
   return lines.length ? lines : null;
+};
+
+export const parseCSVLine = (line: string): { title: string; weight: string } | null => {
+  const match = line.match(RE_CSV_LINE);
+  if (!match) {
+    return null;
+  }
+  const [, title, weight] = match;
+
+  return {
+    title: title.trim(),
+    weight: weight.trim(),
+  };
 };
 
 export const isValidWeight = (weight: string | number): boolean => {

@@ -1,6 +1,11 @@
+import { Element } from '../../components/base/element.ts';
 import { Visibility } from '../../constants/index.ts';
-import { Element } from '../base/element.ts';
-import type { OnErrorHandler, OnLoadHandler } from './types.ts';
+
+export type FileData = string | ArrayBuffer | null;
+
+export type OnLoadHandler = ((v: FileData) => void) | null;
+
+export type OnErrorHandler = (() => void) | null;
 
 export class TextFileReader extends Element<HTMLInputElement> {
   private encoding: string = '';

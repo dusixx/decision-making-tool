@@ -1,6 +1,6 @@
+import { JSONFileService } from '../../services/json-file-service/json-file-service.ts';
 import { JSONParse } from '../../utils/index.ts';
 import { Element } from '../base/index.ts';
-import { JSONFileService } from '../json-file-service/json-file-service.ts';
 import { Option } from '../option-list/option/option.ts';
 
 import {
@@ -9,14 +9,14 @@ import {
   isLikeListData,
   isValidWeight,
   LS_KEY_LIST,
-  normalizeCSV,
+  normalizeCSVText,
+  parseCSVLine,
 } from './utils/misc.ts';
 
 import styles from './option-list.module.scss';
 
 const FILE_PREFIX = 'options';
 const FILE_NAME = `${FILE_PREFIX}-dmt-0fef90dd`;
-const RE_CSV_LINE = /^(?<title>.*),(?<weight>[^,]*)$/;
 const INITIAL_ID = 1;
 
 export type OptionData = {
@@ -40,6 +40,10 @@ export class OptionList extends Element<HTMLUListElement> {
     this.init();
   }
 
+  public get length(): number {
+    return this.optionsMap.size;
+  }
+
   public get data(): OptionData[] {
     return [...this.optionsMap].map(([id, { title, weight }]) => {
       const weightNumber = isValidWeight(weight) ? Number(weight) : 0;
@@ -53,7 +57,7 @@ export class OptionList extends Element<HTMLUListElement> {
   };
 
   public add(title: string = '', weight: number = 0): Option {
-    const option = this.createOption({ id: this.lastId, title, weight });
+    const option = this.addNewOption({ id: this.lastId, title, weight });
 
     this.append(option);
     this.lastId += 1;
@@ -89,36 +93,25 @@ export class OptionList extends Element<HTMLUListElement> {
     localStorage.setItem(LS_KEY_LIST, data);
   }
 
-  public restoreFromLocalStorage(): boolean {
+  public updateFromLocalStorage(): void {
     const data = localStorage.getItem(LS_KEY_LIST);
-    this.restoreFromJSON(data ?? '');
-
-    return Boolean(data);
+    this.updateFromJSON(data ?? '');
   }
 
-  public restoreFromJSON(txt: string): void {
+  public updateFromJSON(txt: string): void {
     const data = JSONParse(txt);
-    if (!isLikeListData(data)) {
-      return;
+    if (isLikeListData(data)) {
+      this.update(data);
     }
-    this.restore(data);
   }
 
-  public parseCSV(txt: string): void {
-    const lines = normalizeCSV(txt);
+  public updateFromCSV(txt: string): void {
+    const lines = normalizeCSVText(txt);
     if (!lines) {
       return;
     }
     const options = lines.map((line) => {
-      const match = line.match(RE_CSV_LINE);
-      if (!match) {
-        return null;
-      }
-      let [, title, weight] = match;
-
-      title = title.trim();
-      weight = weight.trim();
-
+      const { title, weight } = parseCSVLine(line) ?? {};
       if (!weight || isValidWeight(weight)) {
         return this.add(title, Number(weight));
       }
@@ -128,7 +121,7 @@ export class OptionList extends Element<HTMLUListElement> {
     this.append(...options);
   }
 
-  private createOption = ({ id, title, weight }: OptionData): Option => {
+  private addNewOption = ({ id, title, weight }: OptionData): Option => {
     const option = new Option(id);
 
     option.title = title;
@@ -138,14 +131,12 @@ export class OptionList extends Element<HTMLUListElement> {
     return option;
   };
 
-  private restore(data: ListData): void {
-    this.clear();
-
+  private update(data: ListData): void {
     const { lastId, list } = data;
-    this.lastId = lastId;
 
-    const options = list.map(this.createOption);
-    this.append(...options);
+    this.clear();
+    this.append(...list.map(this.addNewOption));
+    this.lastId = lastId;
   }
 
   private serialize(): string {
@@ -155,17 +146,13 @@ export class OptionList extends Element<HTMLUListElement> {
     });
   }
 
-  private handleOptionListClick(): void {
+  private init(): void {
     this.addListener('click', (event) => {
       const id = getPressedDeleteButtonId(event);
       if (id != null) {
         this.delete(Number(id));
       }
     });
-  }
-
-  private init(): void {
-    this.handleOptionListClick();
   }
 
   private getItemById(id: number): Element<HTMLLIElement> | undefined {

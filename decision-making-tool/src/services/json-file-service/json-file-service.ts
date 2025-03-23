@@ -1,11 +1,9 @@
-import { anchor } from '../base/tags.ts';
+import { anchor } from '../../components/base/tags.ts';
+import type { OnErrorHandler, OnLoadHandler } from './text-file-reader.ts';
 import { TextFileReader } from './text-file-reader.ts';
-import type { OnErrorHandler, OnLoadHandler } from './types.ts';
 
-enum JSONOptions {
-  Filter = '.json',
-  MIMEType = 'application/json',
-}
+const JSON_FILES_FILTER = '.json';
+const JSON_MIME_TYPE = 'application/json';
 
 export class JSONFileService {
   private fileReader = new TextFileReader();
@@ -21,14 +19,14 @@ export class JSONFileService {
 
   public save(json: string, fileName: string): void {
     const { link } = this;
-    const file = new Blob([json], { type: JSONOptions.MIMEType });
+    const fileBlob = new Blob([json], { type: JSON_MIME_TYPE });
 
-    link.node.href = URL.createObjectURL(file);
-    link.node.download = `${fileName}${JSONOptions.Filter}`;
+    link.node.href = URL.createObjectURL(fileBlob);
+    link.node.download = `${fileName}${JSON_FILES_FILTER}`;
     link.node.click();
   }
 
   public load(): void {
-    this.fileReader.showDialog(JSONOptions.Filter);
+    this.fileReader.showDialog(JSON_FILES_FILTER);
   }
 }

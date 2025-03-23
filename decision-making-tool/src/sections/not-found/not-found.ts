@@ -1,4 +1,4 @@
-import { Endpoint } from '../../components/app/routes.ts';
+import { Endpoint } from '../../app/routes.ts';
 import { Button } from '../../components/base/button.ts';
 import { Element } from '../../components/base/element.ts';
 import { div, paragraph } from '../../components/base/tags.ts';
@@ -8,7 +8,6 @@ import { type Router } from '../../router/router.ts';
 import styles from './not-found.module.scss';
 
 const BUTTON_TEXT = `${Icon.House} go to list`;
-
 const NOT_FOUND_TEXT = 'page was not found :(';
 
 export class NotFoundSection extends Element {
@@ -27,13 +26,10 @@ export class NotFoundSection extends Element {
 
     const wrapper = div({ className: styles.wrapper }, this.notFoundText, this.button);
 
-    this.append(wrapper);
-    this.init();
-  }
-
-  private init(): void {
     this.button.onClick = (): void => {
       this.router.navigate(Endpoint.OptionList, true);
     };
+
+    this.append(wrapper);
   }
 }

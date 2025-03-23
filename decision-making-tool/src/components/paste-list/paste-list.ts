@@ -19,7 +19,7 @@ export class PasteList {
       className: styles.text,
       placeholder: PLACEHOLDER,
     });
-    this.handleTextAreaKeydown();
+    this._textArea.addListener('keydown', this.handleTextAreaKeydown);
   }
 
   public set onConfirm(handler: OnConfirmHandler) {
@@ -47,15 +47,13 @@ export class PasteList {
     });
   }
 
-  private handleTextAreaKeydown(): void {
-    this._textArea.addListener('keydown', (event) => {
-      if (!(event instanceof KeyboardEvent)) {
-        return;
-      }
-      if (isKeyPressed(KeyboardEventKey.Escape, event)) {
-        event.preventDefault();
-        this.modal?.close('cancelled');
-      }
-    });
-  }
+  private handleTextAreaKeydown = (event: Event): void => {
+    if (!(event instanceof KeyboardEvent)) {
+      return;
+    }
+    if (isKeyPressed(KeyboardEventKey.Escape, event)) {
+      event.preventDefault();
+      this.modal?.close('cancelled');
+    }
+  };
 }

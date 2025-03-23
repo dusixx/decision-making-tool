@@ -1,4 +1,4 @@
-import { Endpoint } from '../../components/app/routes.ts';
+import { Endpoint } from '../../app/routes.ts';
 import { Element } from '../../components/base/element.ts';
 import type { SliceData, Wheel } from '../../components/wheel/wheel.ts';
 import { EventType } from '../../constants/index.ts';
@@ -29,6 +29,7 @@ export class DecisionPickerSection extends Element {
     this.wheel = wheel;
 
     this.append(wrapper);
+
     this.init();
   }
 
@@ -46,26 +47,26 @@ export class DecisionPickerSection extends Element {
     }
   };
 
-  private handleDurationFocus(): void {
+  private addDurationFocusHandler(): void {
     this.duration.addListener('focus', () => {
       this.duration.node.select();
     });
   }
 
-  private handleDurationBlur(): void {
+  private addDurationBlurHandler(): void {
     this.duration.addListener('blur', () => {
       this.duration.node.reportValidity();
     });
   }
 
-  private handleRepaintClick(): void {
+  private addRepaintClickHandler(): void {
     const { repaint } = this.buttons;
     repaint.onClick = (): void => {
       this.wheel.repaint();
     };
   }
 
-  private handleBackClick(): void {
+  private addBackClickHandler(): void {
     const { back } = this.buttons;
     back.onClick = (): void => {
       this.router.navigate(Endpoint.OptionList);
@@ -77,7 +78,7 @@ export class DecisionPickerSection extends Element {
     this.duration.node.disabled = flag;
   }
 
-  private handleWheelSpinFinish(): void {
+  private addWheelSpinFinishHandler(): void {
     this.wheel.onFinish = (winner): void => {
       this.disableControls(false);
       this.pickedOption.node.style.backgroundColor = PICKED_OPTION_HIGHLIGHT_BG;
@@ -85,8 +86,8 @@ export class DecisionPickerSection extends Element {
     };
   }
 
-  private handleStartClick(): void {
-    this.handleWheelSpinFinish();
+  private addStartClickHandler(): void {
+    this.addWheelSpinFinishHandler();
 
     this.buttons.start.onClick = (): void => {
       if (!this.duration.node.reportValidity()) {
@@ -99,25 +100,25 @@ export class DecisionPickerSection extends Element {
     };
   }
 
-  private handleAppContentChange(): void {
+  private addBeforeContentChangeHandler(): void {
     document.addEventListener(EventType.BeforeContentChange, () => {
       this.wheel.stop();
     });
   }
 
-  private handleSlideChange(): void {
+  private addWheelSlideChangeHandler(): void {
     this.wheel.onChange = (slice): void => {
       this.pickedOption.node.value = slice?.sliceText ?? slice?.title ?? '';
     };
   }
 
   private init(): void {
-    this.handleSlideChange();
-    this.handleRepaintClick();
-    this.handleAppContentChange();
-    this.handleStartClick();
-    this.handleBackClick();
-    this.handleDurationBlur();
-    this.handleDurationFocus();
+    this.addWheelSlideChangeHandler();
+    this.addRepaintClickHandler();
+    this.addBeforeContentChangeHandler();
+    this.addStartClickHandler();
+    this.addBackClickHandler();
+    this.addDurationBlurHandler();
+    this.addDurationFocusHandler();
   }
 }

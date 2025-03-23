@@ -1,5 +1,5 @@
-import type { Route } from '../../components/app/routes.ts';
-import { Endpoint, routes } from '../../components/app/routes.ts';
+import type { Route } from '../../app/routes.ts';
+import { Endpoint, routes } from '../../app/routes.ts';
 import { Element } from '../../components/base/element.ts';
 import { EventType } from '../../constants/index.ts';
 import { Router } from '../../router/router.ts';

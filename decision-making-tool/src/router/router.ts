@@ -1,5 +1,5 @@
-import { Endpoint } from '../components/app/routes.ts';
-import type { Route } from './../components/app/routes';
+import type { Route } from '../app/routes.ts';
+import { Endpoint } from '../app/routes.ts';
 
 enum HistoryAction {
   ReplaceState = 'replaceState',
@@ -62,25 +62,25 @@ export class Router {
     });
   }
 
+  private findRoute(pathname: string): Route | undefined {
+    return this.routes.find((route) => {
+      return Router.isPathnamesEqual(route.pathname, pathname);
+    });
+  }
+
   private matchRoute(pathname: string, replace: boolean = false): void {
     // last part only
     pathname = pathname.match(/\/[^/]*$/)?.[0] ?? '/';
 
-    const found = this.routes.find((route) => {
-      return Router.isPathnamesEqual(route.pathname, pathname);
-    });
+    const found = this.findRoute(pathname);
     if (found) {
       const action = replace ? HistoryAction.ReplaceState : HistoryAction.PushState;
-
       history[action](null, '', pathname);
-
       this.callHandlers('routechange', found);
 
       return;
     }
-    const page404 = this.routes.find((route) => {
-      return Router.isPathnamesEqual(route.pathname, Endpoint.NotFound);
-    });
+    const page404 = this.findRoute(Endpoint.NotFound);
     if (page404) {
       this.callHandlers('routechange', page404);
     }
