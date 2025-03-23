@@ -28,6 +28,7 @@ type Props = {
 
 export class Wheel extends Element<HTMLCanvasElement> {
   public onFinish: OnSlideChangeHandler = null;
+  public onDraw: OnSlideChangeHandler = null;
   public onChange: OnSlideChangeHandler = null;
   public currentSlice: SliceData | null = null;
 
@@ -82,7 +83,8 @@ export class Wheel extends Element<HTMLCanvasElement> {
     let angle = 0;
 
     const animate = (): void => {
-      const elapsed = performance.now() - startTime;
+      const now = performance.now();
+      const elapsed = now - startTime;
 
       angle += speed * (elapsed >= durationMs / 2 ? -1 : 1);
       // in case you switched tabs - the speed of Raf callback may be reduced
@@ -129,8 +131,11 @@ export class Wheel extends Element<HTMLCanvasElement> {
       updateSliceAngles(slice, angleDeltaRad);
 
       if (isCurrentSlice(slice)) {
+        if (this.currentSlice !== slice) {
+          this.onChange?.(slice);
+        }
         this.currentSlice = slice;
-        this.onChange?.(slice);
+        this.onDraw?.(slice);
       }
       drawHelper.createSlice(slice);
     }

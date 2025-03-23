@@ -5,7 +5,7 @@ import { getRndColorMixCss } from '../../utils/color.ts';
 
 import styles from './header.module.scss';
 
-const LOGO_TEXT = `Make${Icon.Pull8Ball}Decision`;
+const LOGO_TEXT = `Make#ur${Icon.Pull8Ball}Decision`;
 const BASE_COLOR = '#ff33f7';
 
 export class Logo extends Element<HTMLDivElement> {
@@ -14,7 +14,8 @@ export class Logo extends Element<HTMLDivElement> {
 
     const letters = [...LOGO_TEXT].map((text) => {
       const _span = span({ text });
-      _span.node.style.color = getRndColorMixCss({ baseColor: BASE_COLOR });
+      const { style } = _span.node;
+      style.color = getRndColorMixCss({ baseColor: BASE_COLOR, percent: 55 });
 
       return _span;
     });

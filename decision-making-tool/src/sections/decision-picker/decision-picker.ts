@@ -107,14 +107,14 @@ export class DecisionPickerSection extends Element {
     });
   }
 
-  private addWheelSlideChangeHandler(): void {
+  private addWheelSliceChangeHandler(): void {
     this.wheel.onChange = (slice): void => {
       this.pickedOption.node.value = slice?.shortenedTitle || slice?.title || '';
     };
   }
 
   private init(): void {
-    this.addWheelSlideChangeHandler();
+    this.addWheelSliceChangeHandler();
     this.addRepaintClickHandler();
     this.addBeforeContentChangeHandler();
     this.addStartClickHandler();

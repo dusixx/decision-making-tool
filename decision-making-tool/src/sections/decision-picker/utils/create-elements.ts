@@ -22,12 +22,10 @@ const buttonsData: Record<string, string> = {
   start: `${Icon.Rocket} start`,
 };
 
-enum DurationOptions {
-  InputId = 'duration-id',
-  DefaultValue = '10',
-  MinValue = '5',
-  MaxValue = '30',
-}
+const DURATION_ID = 'duration-id';
+const DEFAULT_DURATION = '5';
+const MIN_DURATION = '5';
+const MAX_DURATION = '30';
 
 const createWheel = (): Wheel => {
   const listData = OptionList.getFromLocalStorage();
@@ -51,16 +49,16 @@ const createDurationElement = (): {
 
   const _label = label({ className: styles.label });
   _label.text = Icon.Stopwatch;
-  _label.node.htmlFor = DurationOptions.InputId;
+  _label.node.htmlFor = DURATION_ID;
 
   const durationInput = input({
     type: 'number',
     title: 'duration',
     className: styles.duration,
-    id: DurationOptions.InputId,
-    min: DurationOptions.MinValue,
-    max: DurationOptions.MaxValue,
-    value: DurationOptions.DefaultValue,
+    id: DURATION_ID,
+    min: MIN_DURATION,
+    max: MAX_DURATION,
+    value: DEFAULT_DURATION,
     required: true,
   });
 
