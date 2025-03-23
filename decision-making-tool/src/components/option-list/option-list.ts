@@ -60,6 +60,7 @@ export class OptionList extends Element<HTMLUListElement> {
     const option = this.addNewOption({ id: this.lastId, title, weight });
 
     this.append(option);
+    option.node.scrollIntoView();
     this.lastId += 1;
 
     return option;
