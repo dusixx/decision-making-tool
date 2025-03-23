@@ -101,7 +101,7 @@ export class OptionList extends Element<HTMLUListElement> {
   public updateFromJSON(txt: string): void {
     const data = JSONParse(txt);
     if (isLikeListData(data)) {
-      this.update(data);
+      this.updateFromListData(data);
     }
   }
 
@@ -112,6 +112,7 @@ export class OptionList extends Element<HTMLUListElement> {
     }
     const options = lines.map((line) => {
       const { title, weight } = parseCSVLine(line) ?? {};
+
       if (!weight || isValidWeight(weight)) {
         return this.add(title, Number(weight));
       }
@@ -119,6 +120,14 @@ export class OptionList extends Element<HTMLUListElement> {
     });
 
     this.append(...options);
+  }
+
+  private updateFromListData(data: ListData): void {
+    const { lastId, list } = data;
+
+    this.clear();
+    this.append(...list.map(this.addNewOption));
+    this.lastId = lastId;
   }
 
   private addNewOption = ({ id, title, weight }: OptionData): Option => {
@@ -130,14 +139,6 @@ export class OptionList extends Element<HTMLUListElement> {
 
     return option;
   };
-
-  private update(data: ListData): void {
-    const { lastId, list } = data;
-
-    this.clear();
-    this.append(...list.map(this.addNewOption));
-    this.lastId = lastId;
-  }
 
   private serialize(): string {
     return JSON.stringify({
