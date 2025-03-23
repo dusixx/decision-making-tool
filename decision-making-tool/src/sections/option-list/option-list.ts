@@ -27,8 +27,7 @@ export class OptionListSection extends Element {
     this.pasteList = new PasteList();
     this.router = router;
 
-    this.optionList.updateFromLocalStorage();
-    if (!this.optionList.length) {
+    if (!this.optionList.updateFromLocalStorage()) {
       this.optionList.add();
     }
 

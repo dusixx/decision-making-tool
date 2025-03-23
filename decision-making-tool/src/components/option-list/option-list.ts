@@ -93,9 +93,11 @@ export class OptionList extends Element<HTMLUListElement> {
     localStorage.setItem(LS_KEY_LIST, data);
   }
 
-  public updateFromLocalStorage(): void {
+  public updateFromLocalStorage(): boolean {
     const data = localStorage.getItem(LS_KEY_LIST);
     this.updateFromJSON(data ?? '');
+
+    return Boolean(data);
   }
 
   public updateFromJSON(txt: string): void {

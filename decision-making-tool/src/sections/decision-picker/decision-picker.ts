@@ -109,7 +109,7 @@ export class DecisionPickerSection extends Element {
 
   private addWheelSlideChangeHandler(): void {
     this.wheel.onChange = (slice): void => {
-      this.pickedOption.node.value = slice?.sliceText ?? slice?.title ?? '';
+      this.pickedOption.node.value = slice?.shortenedTitle || slice?.title || '';
     };
   }
 

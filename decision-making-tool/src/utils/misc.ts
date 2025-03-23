@@ -47,3 +47,5 @@ export const isKeyPressed = (key: KeyboardEventKey, event: KeyboardEvent): boole
   const { key: k, ctrlKey: ctrl, altKey: alt, shiftKey: shift } = event;
   return k === key.toString() && !ctrl && !alt && !shift;
 };
+
+export const radToDeg = (rad: number): number => rad * (180 / Math.PI);

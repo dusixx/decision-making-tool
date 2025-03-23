@@ -2,7 +2,7 @@ import { Button, input, label } from '../../../base/index.ts';
 
 import styles from '../option.module.scss';
 
-const TITLE_MAX_LEN = 80;
+const TITLE_MAX_LEN = 120;
 const TITLE_MIN_LEN = 10;
 const WEIGHT_MIN = 0;
 
