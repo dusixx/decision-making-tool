@@ -4,7 +4,7 @@ export type SliceData = OptionData & {
   startAngleRad: number;
   endAngleRad: number;
   color: string;
-  sliceText: string;
+  shortenedTitle: string;
 };
 
 export type Point = { x: number; y: number };

@@ -53,7 +53,7 @@ export class DrawHelper {
     this.createCircle(radius);
   }
 
-  public createSlice(slice: SliceData): void {
+  public createSlice(slice: SliceData, textStroke: number = 0): void {
     const { startAngleRad, endAngleRad, color } = slice;
     const { context } = this;
     const { radius } = this.wheel;
@@ -68,7 +68,7 @@ export class DrawHelper {
 
     // do not display text for too narrow slice
     if (sliceAngleRad >= SLICE_TEXT_VISIBILITY_ANGLE_THRESHOLD) {
-      this.createSliceText(slice);
+      this.createSliceText(slice, textStroke);
     }
   }
 
@@ -96,7 +96,7 @@ export class DrawHelper {
     this.context.shadowColor = 'transparent';
   }
 
-  private createSliceText(slice: SliceData): void {
+  private createSliceText(slice: SliceData, textStroke: number = 0): void {
     const { startAngleRad, endAngleRad, title } = slice;
     const { context } = this;
     const {
@@ -104,7 +104,6 @@ export class DrawHelper {
       needleRadius,
     } = this.wheel;
 
-    context.lineWidth = LINE_WIDTH;
     context.fillStyle = SLICE_TEXT_COLOR;
     context.font = SLICE_TEXT_FONT;
     context.textBaseline = SLICE_TEXT_BASELINE;
@@ -113,14 +112,18 @@ export class DrawHelper {
     context.translate(cx, cy);
     context.rotate((startAngleRad + endAngleRad) / 2);
 
-    slice.sliceText = slice.sliceText || this.fitSliceText(title);
+    slice.shortenedTitle = slice.shortenedTitle || this.shortenSliceTitle(title);
 
-    context.strokeText(slice.sliceText, needleRadius + SLICE_TEXT_NEEDLE_OFFSET, 0);
-    context.fillText(slice.sliceText, needleRadius + SLICE_TEXT_NEEDLE_OFFSET, 0);
+    if (textStroke > 0) {
+      context.lineWidth = textStroke;
+      context.strokeText(slice.shortenedTitle, needleRadius + SLICE_TEXT_NEEDLE_OFFSET, 0);
+    }
+
+    context.fillText(slice.shortenedTitle, needleRadius + SLICE_TEXT_NEEDLE_OFFSET, 0);
     context.restore();
   }
 
-  private fitSliceText(title: string): string {
+  private shortenSliceTitle(title: string): string {
     const { radius, needleRadius } = this.wheel;
 
     const availableWidth = radius - needleRadius - SLICE_TEXT_NEEDLE_OFFSET;

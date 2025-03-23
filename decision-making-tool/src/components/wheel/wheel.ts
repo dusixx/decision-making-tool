@@ -27,13 +27,14 @@ type Props = {
 };
 
 export class Wheel extends Element<HTMLCanvasElement> {
+  public onFinish: OnSlideChangeHandler = null;
+  public onChange: OnSlideChangeHandler = null;
+  public currentSlice: SliceData | null = null;
+
   private _radius: number = 0;
   private context: CanvasRenderingContext2D;
   private drawHelper: DrawHelper;
   private slices: SliceData[] = [];
-  private _onFinish: OnSlideChangeHandler = null;
-  private _onChange: OnSlideChangeHandler = null;
-  private _currentSlice: SliceData | null = null;
   private _abort = false;
 
   constructor({ options, totalWeight, radius = WHEEL_DEFAULT_RADIUS }: Props) {
@@ -42,13 +43,10 @@ export class Wheel extends Element<HTMLCanvasElement> {
     this.radius = radius;
     this.context = this.getContext2D();
     this.drawHelper = new DrawHelper(this, this.context);
+
     this.slices = createSlicesFromOptions(options, totalWeight);
 
     this.draw();
-  }
-
-  public get currentSlice(): SliceData | null {
-    return this._currentSlice;
   }
 
   public get radius(): number {
@@ -72,37 +70,28 @@ export class Wheel extends Element<HTMLCanvasElement> {
     this._radius = v;
   }
 
-  public set onFinish(handler: OnSlideChangeHandler) {
-    this._onFinish = handler;
-  }
-
-  public set onChange(handler: OnSlideChangeHandler) {
-    this._onChange = handler;
-  }
-
   public stop(): void {
     this._abort = true;
   }
 
   public spin(durationSecs: number): void {
+    const durationMs = durationSecs * 1000;
     const startTime = performance.now();
     const speed = getRndWheelSpeed();
     let rafId: number;
     let angle = 0;
 
-    const durationMs = durationSecs * 1000;
-
     const animate = (): void => {
       const elapsed = performance.now() - startTime;
 
       angle += speed * (elapsed >= durationMs / 2 ? -1 : 1);
-      // In case you switched tabs - the speed of Raf callback may be reduced
+      // in case you switched tabs - the speed of Raf callback may be reduced
       angle = angle < 0 ? 0 : angle;
 
       if (elapsed >= durationMs || this._abort) {
         cancelAnimationFrame(rafId);
         if (!this._abort) {
-          this._onFinish?.(this.currentSlice);
+          this.onFinish?.(this.currentSlice);
         }
         this._abort = false;
 
@@ -140,8 +129,8 @@ export class Wheel extends Element<HTMLCanvasElement> {
       updateSliceAngles(slice, angleDeltaRad);
 
       if (isCurrentSlice(slice)) {
-        this._currentSlice = slice;
-        this._onChange?.(slice);
+        this.currentSlice = slice;
+        this.onChange?.(slice);
       }
       drawHelper.createSlice(slice);
     }
