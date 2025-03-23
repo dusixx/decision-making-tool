@@ -1,5 +1,5 @@
 import { showModalMessage } from '../../../components/modal/utils/show-modal-message.ts';
-import type { SliceData } from '../../../components/wheel/wheel.ts';
+import type { SliceData } from '../../../components/wheel/types.ts';
 import { Icon } from '../../../constants/index.ts';
 
 import styles from '../decision-picker.module.scss';

@@ -1,6 +1,7 @@
 import { Endpoint } from '../../app/routes.ts';
 import { Element } from '../../components/base/element.ts';
-import type { SliceData, Wheel } from '../../components/wheel/wheel.ts';
+import type { SliceData } from '../../components/wheel/types.ts';
+import type { Wheel } from '../../components/wheel/wheel.ts';
 import { EventType } from '../../constants/index.ts';
 import type { Router } from '../../router/router.ts';
 import type { DecisionPickerSectionButtonsMap } from './utils/create-elements.ts';

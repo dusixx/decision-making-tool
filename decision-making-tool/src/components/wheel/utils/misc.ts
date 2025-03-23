@@ -1,14 +1,16 @@
 import { getRndColorMixCss } from '../../../utils/color.ts';
 import { randomizeArray, rndInt } from '../../../utils/misc.ts';
 import type { OptionData } from '../../option-list/option-list.ts';
-import type { SliceData } from '../wheel.ts';
+import type { SliceData } from '../types.ts';
 
 export const PI2 = Math.PI * 2;
 const CURSOR_POSITION_RAD = Math.PI * 1.5;
 
-const WHEEL_SPIN_SPEED_MIN = 20;
-const WHEEL_SPIN_SPEED_MAX = 35;
-const WHEEL_SPIN_SPEED_RATIO = 1e5;
+enum WheelSpin {
+  MinSpeed = 20,
+  MaxSpeed = 35,
+  SpeedRatio = 1e5,
+}
 
 export const createSlicesFromOptions = (
   options: OptionData[],
@@ -37,10 +39,10 @@ export const createSlicesFromOptions = (
 };
 
 export const getRndWheelSpeed = (
-  min: number = WHEEL_SPIN_SPEED_MIN,
-  max: number = WHEEL_SPIN_SPEED_MAX
+  min: number = WheelSpin.MinSpeed,
+  max: number = WheelSpin.MaxSpeed
 ): number => {
-  return rndInt(min, max) / WHEEL_SPIN_SPEED_RATIO;
+  return rndInt(min, max) / WheelSpin.SpeedRatio;
 };
 
 export const isCurrentSlice = (slice: SliceData): boolean => {
