@@ -2,13 +2,13 @@ import type { SliceData } from '../types.ts';
 import { NEEDLE_RADIUS_RATIO, type Wheel } from './../wheel';
 import { PI2 } from './misc.ts';
 
-const CURSOR_LINE_WIDTH = 1.5;
+const CURSOR_LINE_WIDTH = 2;
 const LINE_WIDTH = 1.5;
 const SHADOW_BLUR = 4;
 
 const STROKE_COLOR = 'white';
 const CURSOR_COLOR = 'rgb(206, 20, 104)';
-const SHADOW_COLOR = 'rgb(170 170 170)';
+const SHADOW_COLOR = 'rgb(190 190 190)';
 const NEEDLE_COLOR = 'white';
 
 const SLICE_TEXT_NEEDLE_OFFSET = 25;
@@ -44,13 +44,23 @@ export class DrawHelper {
   }
 
   public createNeedle(): void {
+    const { context } = this;
     const { radius } = this.wheel;
+
+    context.shadowBlur = SHADOW_BLUR + 1;
+    context.shadowColor = SHADOW_COLOR;
     this.createCircle(radius * NEEDLE_RADIUS_RATIO);
+    context.shadowColor = 'transparent';
   }
 
   public createBaseCircle(): void {
+    const { context } = this;
     const { radius } = this.wheel;
+
+    context.shadowBlur = SHADOW_BLUR + 1;
+    context.shadowColor = SHADOW_COLOR;
     this.createCircle(radius);
+    context.shadowColor = 'transparent';
   }
 
   public createSlice(slice: SliceData, textStroke: number = 0): void {
@@ -63,7 +73,7 @@ export class DrawHelper {
     context.lineWidth = LINE_WIDTH;
     context.strokeStyle = STROKE_COLOR;
 
-    this.createCircle(radius, startAngleRad, endAngleRad, color);
+    this.createCircle(radius - 3, startAngleRad, endAngleRad, color);
     context.stroke();
 
     // do not display text for too narrow slice
@@ -83,8 +93,6 @@ export class DrawHelper {
       center: { x: cx, y: cy },
     } = this.wheel;
 
-    context.shadowBlur = SHADOW_BLUR + 1;
-    context.shadowColor = SHADOW_COLOR;
     context.fillStyle = fillStyle;
 
     context.beginPath();
@@ -92,8 +100,6 @@ export class DrawHelper {
     context.arc(cx, cy, radius, startAngle, endAngle);
     context.closePath();
     context.fill();
-
-    this.context.shadowColor = 'transparent';
   }
 
   private createSliceText(slice: SliceData, textStroke: number = 0): void {
@@ -118,7 +124,6 @@ export class DrawHelper {
       context.lineWidth = textStroke;
       context.strokeText(slice.shortenedTitle, needleRadius + SLICE_TEXT_NEEDLE_OFFSET, 0);
     }
-
     context.fillText(slice.shortenedTitle, needleRadius + SLICE_TEXT_NEEDLE_OFFSET, 0);
     context.restore();
   }

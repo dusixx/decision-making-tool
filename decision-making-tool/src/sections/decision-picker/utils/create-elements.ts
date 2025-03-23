@@ -23,7 +23,7 @@ const buttonsData: Record<string, string> = {
 };
 
 const DURATION_ID = 'duration-id';
-const DEFAULT_DURATION = '5';
+const DEFAULT_DURATION = '10';
 const MIN_DURATION = '5';
 const MAX_DURATION = '30';
 

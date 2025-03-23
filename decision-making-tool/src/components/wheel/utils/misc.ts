@@ -7,7 +7,7 @@ export const PI2 = Math.PI * 2;
 const CURSOR_POSITION_RAD = Math.PI * 1.5;
 
 enum WheelSpin {
-  MinSpeed = 25,
+  MinSpeed = 35,
   MaxSpeed = 45,
   SpeedRatio = 1e5,
 }
