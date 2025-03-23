@@ -105,9 +105,7 @@ export class Modal extends Element<HTMLDivElement> {
     scrollLock.toggle(wasShown);
 
     if (wasShown) {
-      document.addEventListener('keydown', this.handleDocumentKeydown, {
-        once: true,
-      });
+      document.addEventListener('keydown', this.handleDocumentKeydown);
     } else {
       document.removeEventListener('keydown', this.handleDocumentKeydown);
     }
