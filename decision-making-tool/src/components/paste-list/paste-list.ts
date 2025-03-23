@@ -1,5 +1,3 @@
-import { KeyboardEventKey } from '../../constants/index.ts';
-import { isKeyPressed } from '../../utils/misc.ts';
 import { textArea } from '../base/tags.ts';
 import { Modal } from '../modal/modal.ts';
 
@@ -19,7 +17,6 @@ export class PasteList {
       className: styles.text,
       placeholder: PLACEHOLDER,
     });
-    this._textArea.addListener('keydown', this.handleTextAreaKeydown);
   }
 
   public set onConfirm(handler: OnConfirmHandler) {
@@ -46,14 +43,4 @@ export class PasteList {
       },
     });
   }
-
-  private handleTextAreaKeydown = (event: Event): void => {
-    if (!(event instanceof KeyboardEvent)) {
-      return;
-    }
-    if (isKeyPressed(KeyboardEventKey.Escape, event)) {
-      event.preventDefault();
-      this.modal?.close('cancelled');
-    }
-  };
 }
