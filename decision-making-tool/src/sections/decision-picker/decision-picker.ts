@@ -11,6 +11,10 @@ import { SoundToggler } from './utils/sound-toggler.ts';
 
 const SOUND_OF_VICTORY = new Audio('./won.mp3');
 
+const SOUND_SLICE_CHANGE = new Audio('./3.mp3');
+SOUND_SLICE_CHANGE.playbackRate = 15;
+SOUND_SLICE_CHANGE.volume = 1;
+
 const PICKED_OPTION_HIGHLIGHT_BG = 'var(--color-picked-option-bg)';
 
 export class DecisionPickerSection extends Element {
@@ -109,6 +113,9 @@ export class DecisionPickerSection extends Element {
 
   private addWheelSliceChangeHandler(): void {
     this.wheel.onChange = (slice): void => {
+      if (!this.isSoundMuted()) {
+        void SOUND_SLICE_CHANGE.play();
+      }
       this.pickedOption.node.value = slice?.shortenedTitle || slice?.title || '';
     };
   }

@@ -1,12 +1,14 @@
 import { getRndColorMixCss } from '../../utils/index.ts';
 import { Element } from '../base/element.ts';
 import type { OptionData } from '../option-list/option-list.ts';
+import { rndInt } from './../../utils/misc';
 import type { OnSlideChangeHandler, Point, SliceData } from './types.ts';
 import { DrawHelper } from './utils/draw-helper.ts';
 import {
   createSlicesFromOptions,
-  getRndWheelSpeed,
+  easeOutCubic,
   isCurrentSlice,
+  PI2,
   updateSliceAngles,
 } from './utils/misc.ts';
 
@@ -15,6 +17,8 @@ import styles from './wheel.module.scss';
 export const NEEDLE_RADIUS_RATIO = 0.15;
 const CANVAS_PADDING = 30;
 const WHEEL_DEFAULT_RADIUS = 250;
+const MIN_TURNS_COUNT = 5;
+const MAX_TURNS_COUNT = 7;
 
 const ERR_INVALID_CONTEXT =
   'The context id is not supported, or the canvas has already been set to a different context mode';
@@ -76,22 +80,18 @@ export class Wheel extends Element<HTMLCanvasElement> {
   }
 
   public spin(durationSecs: number): void {
-    const durationMs = durationSecs * 1000;
     const startTime = performance.now();
-    const speed = getRndWheelSpeed();
-    let rafId: number;
-    let angle = 0;
+    const durationMs = durationSecs * 1000;
+    const randomDelta = Math.random() * PI2;
+    const turnsCount = rndInt(MIN_TURNS_COUNT, MAX_TURNS_COUNT) * PI2;
+    const spinAngle = turnsCount + randomDelta;
 
     const animate = (): void => {
-      const now = performance.now();
-      const elapsed = now - startTime;
+      const elapsed = performance.now() - startTime;
+      const progress = elapsed / durationMs;
+      const startAngle = spinAngle * easeOutCubic(progress);
 
-      angle += speed * (elapsed >= durationMs / 2 ? -1 : 1);
-      // in case you switched tabs - the speed of Raf callback may be reduced
-      angle = angle < 0 ? 0 : angle;
-
-      if (elapsed >= durationMs || this._abort) {
-        cancelAnimationFrame(rafId);
+      if (progress >= 1 || this._abort) {
         if (!this._abort) {
           this.onFinish?.(this.currentSlice);
         }
@@ -99,9 +99,8 @@ export class Wheel extends Element<HTMLCanvasElement> {
 
         return;
       }
-      this.draw(angle);
-
-      rafId = requestAnimationFrame(animate);
+      this.draw(startAngle);
+      requestAnimationFrame(animate);
     };
 
     animate();
@@ -121,14 +120,14 @@ export class Wheel extends Element<HTMLCanvasElement> {
     drawHelper.createCursor();
   }
 
-  private draw(angleDeltaRad: number = 0): void {
+  private draw(startAngleRad: number = 0): void {
     const { drawHelper } = this;
 
     this.clearCanvas();
     drawHelper.createBaseCircle();
 
     for (const slice of this.slices) {
-      updateSliceAngles(slice, angleDeltaRad);
+      updateSliceAngles(slice, startAngleRad);
 
       if (isCurrentSlice(slice)) {
         if (this.currentSlice !== slice) {
@@ -138,6 +137,8 @@ export class Wheel extends Element<HTMLCanvasElement> {
         this.onDraw?.(slice);
       }
       drawHelper.createSlice(slice);
+
+      startAngleRad = slice.endAngleRad;
     }
     drawHelper.createNeedle();
     drawHelper.createCursor();

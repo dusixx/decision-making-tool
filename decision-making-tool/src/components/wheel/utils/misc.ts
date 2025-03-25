@@ -7,9 +7,9 @@ export const PI2 = Math.PI * 2;
 const CURSOR_POSITION_RAD = Math.PI * 1.5;
 
 enum WheelSpin {
-  MinSpeed = 35,
-  MaxSpeed = 45,
-  SpeedRatio = 1e5,
+  MinSpeed = 5,
+  MaxSpeed = 10,
+  SpeedRatio = 1e4,
 }
 
 export const createSlicesFromOptions = (
@@ -38,6 +38,10 @@ export const createSlicesFromOptions = (
   return slices;
 };
 
+export function easeOutCubic(x: number): number {
+  return 1 - Math.pow(1 - x, 3);
+}
+
 export const getRndWheelSpeed = (
   min: number = WheelSpin.MinSpeed,
   max: number = WheelSpin.MaxSpeed
@@ -55,11 +59,12 @@ export const isCurrentSlice = (slice: SliceData): boolean => {
   return CURSOR_POSITION_RAD <= end && CURSOR_POSITION_RAD >= start;
 };
 
-export const updateSliceAngles = (slice: SliceData, angleDeltaRad: number): void => {
+export const updateSliceAngles = (slice: SliceData, startAngleRad: number): void => {
   let { startAngleRad: start, endAngleRad: end } = slice;
+  const angleSize = end - start;
 
-  start = (start + angleDeltaRad) % PI2;
-  end = (end + angleDeltaRad) % PI2;
+  start = startAngleRad % PI2;
+  end = (startAngleRad + angleSize) % PI2;
   if (end < start) {
     end += PI2;
   }

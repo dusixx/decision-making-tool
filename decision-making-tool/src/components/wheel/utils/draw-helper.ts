@@ -3,7 +3,7 @@ import { NEEDLE_RADIUS_RATIO, type Wheel } from './../wheel';
 import { PI2 } from './misc.ts';
 
 const CURSOR_LINE_WIDTH = 2;
-const LINE_WIDTH = 1.5;
+const LINE_WIDTH = 2;
 const SHADOW_BLUR = 4;
 
 const STROKE_COLOR = 'white';
@@ -73,7 +73,7 @@ export class DrawHelper {
     context.lineWidth = LINE_WIDTH;
     context.strokeStyle = STROKE_COLOR;
 
-    this.createCircle(radius - 3, startAngleRad, endAngleRad, color);
+    this.createCircle(radius - 5, startAngleRad, endAngleRad, color);
     context.stroke();
 
     // do not display text for too narrow slice
