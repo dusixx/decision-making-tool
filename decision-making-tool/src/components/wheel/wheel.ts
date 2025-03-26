@@ -1,7 +1,7 @@
 import { getRndColorMixCss } from '../../utils/index.ts';
 import { Element } from '../base/element.ts';
 import type { OptionData } from '../option-list/option-list.ts';
-import { rndInt } from './../../utils/misc';
+//import { rndInt } from './../../utils/misc';
 import type { OnSlideChangeHandler, Point, SliceData } from './types.ts';
 import { DrawHelper } from './utils/draw-helper.ts';
 import {
@@ -18,7 +18,6 @@ export const NEEDLE_RADIUS_RATIO = 0.15;
 const CANVAS_PADDING = 30;
 const WHEEL_DEFAULT_RADIUS = 250;
 const MIN_TURNS_COUNT = 5;
-const MAX_TURNS_COUNT = 7;
 
 const ERR_INVALID_CONTEXT =
   'The context id is not supported, or the canvas has already been set to a different context mode';
@@ -83,8 +82,8 @@ export class Wheel extends Element<HTMLCanvasElement> {
     const startTime = performance.now();
     const durationMs = durationSecs * 1000;
     const randomDelta = Math.random() * PI2;
-    const turnsCount = rndInt(MIN_TURNS_COUNT, MAX_TURNS_COUNT) * PI2;
-    const spinAngle = turnsCount + randomDelta;
+    const turnsCount = Math.max(Math.ceil(durationSecs / 2), MIN_TURNS_COUNT);
+    const spinAngle = turnsCount * PI2 + randomDelta;
 
     const animate = (): void => {
       const elapsed = performance.now() - startTime;
