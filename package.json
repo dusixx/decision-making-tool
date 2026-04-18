@@ -14,9 +14,10 @@
     "stylelint": "stylelint \"**/*.{css,scss}\"",
     "stylelint:fix": "stylelint \"**/*.{css,scss}\" --fix",
     "lint:fix-all": "(npm run stylelint:fix) || true && npm run lint:fix",
-    "prepare": "cd .. && husky ./decision-making-tool/.husky",
+    "prepare": "husky .husky",
     "test": "echo 'hello' && exit 1",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "fix:deps": "rm -rf node_modules package-lock.json && npm cache clean --force && npm i"
   },
   "husky": {
     "hooks": {

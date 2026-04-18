@@ -22,7 +22,7 @@ export const parseOptionsData = (options: OptionData[]): ParseResult => {
     option.title = option.title.trim();
 
     if (option.title && isValidWeight(option.weight)) {
-      result.totalWeight += Number(option.weight);
+      result.totalWeight += option.weight;
       result.validOptions.push(option);
       validsCount += 1;
     }

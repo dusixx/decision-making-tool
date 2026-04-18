@@ -19,7 +19,7 @@ export class BaseElement<T extends HTMLElement = HTMLElement> {
   }
 
   public get text(): string {
-    return this._node.textContent ?? '';
+    return this._node.textContent;
   }
 
   public get node(): T {

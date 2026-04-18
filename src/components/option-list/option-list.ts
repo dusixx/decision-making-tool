@@ -150,7 +150,7 @@ export class OptionList extends Element<HTMLUListElement> {
     this.addListener('click', (event) => {
       const id = getPressedDeleteButtonId(event);
       if (id != null) {
-        this.delete(Number(id));
+        this.delete(id);
       }
     });
   }
