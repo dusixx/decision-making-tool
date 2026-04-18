@@ -9,13 +9,12 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
-  //tseslint.configs.stylisticTypeChecked,
   {
     // disable type-aware linting on JS files
     // https://typescript-eslint.io/troubleshooting/typed-linting/#how-do-i-disable-type-checked-linting-for-a-file
     files: [
       '**/*.js',
-      'src/components/base/create-element.ts',
+      'src/components/base/base-element/base-element.utils.ts',
       'src/sections/decision-picker/raf.ts',
     ],
     extends: [tseslint.configs.disableTypeChecked],
@@ -31,7 +30,7 @@ export default tseslint.config(
       'commitlint.config.mjs',
       'stylelint.config.mjs',
       '**/*.js',
-      'src/components/base/create-element.ts',
+      'src/components/base/base-element/base-element.utils.ts',
       'src/sections/decision-picker/raf.ts',
     ],
     languageOptions: {
@@ -75,6 +74,7 @@ export default tseslint.config(
       'unicorn/prevent-abbreviations': [
         'error',
         {
+          checkFilenames: false,
           allowList: {
             acc: true,
             env: true,
