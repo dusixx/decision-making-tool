@@ -1,5 +1,5 @@
-import { Element } from '../../base/element';
-import { createElements } from './utils/create-elements.ts';
+import { Element } from '@components';
+import { createView } from './create-view.ts';
 
 import styles from './option.module.scss';
 
@@ -10,7 +10,7 @@ export class Option extends Element<HTMLLIElement> {
   constructor(public id: number) {
     super({ tag: 'li', className: styles.option });
 
-    const { label, title, weight, button } = createElements(id);
+    const { label, title, weight, button } = createView(id);
     this.titleRef = title;
     this.weightRef = weight;
 

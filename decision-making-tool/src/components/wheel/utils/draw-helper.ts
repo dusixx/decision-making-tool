@@ -1,5 +1,5 @@
-import type { SliceData } from '../types.ts';
-import { NEEDLE_RADIUS_RATIO, type Wheel } from './../wheel';
+import type { SliceData } from '@components';
+import { NEEDLE_RADIUS_RATIO, type Wheel } from '@components';
 import { PI2 } from './misc.ts';
 
 const CURSOR_LINE_WIDTH = 2;

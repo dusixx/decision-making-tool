@@ -1,3 +1,3 @@
-import { HeaderSection, MainSection } from '../sections/index.ts';
+import { HeaderSection, MainSection } from '@components';
 
 document.body.append(new HeaderSection().node, new MainSection().node);

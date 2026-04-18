@@ -1,6 +1,4 @@
-import { textArea } from '../base/tags.ts';
-import { Modal } from '../modal/modal.ts';
-
+import { Modal, textArea } from '@components';
 import styles from './paste-list.module.scss';
 
 type OnConfirmHandler = ((txt: string) => void) | null;

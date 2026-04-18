@@ -1,12 +1,9 @@
-import type { Button } from '../base/index.js';
-import { Element } from '../base/index.js';
-import type { div } from './../base/tags';
-import { scrollLock } from './utils/scroll-lock.js';
-
-import { KeyboardEventKey, Visibility } from '../../constants/index.js';
-import { isKeyPressed } from '../../utils/misc.js';
-import type { ModalContent, ModalProps, ModalResult, OnCloseModalHandler } from './types.js';
-import { createElements } from './utils/create-elements.js';
+import { KeyboardEventKey, Visibility, isKeyPressed } from '@common';
+import type { Button, div } from '@components';
+import { Element } from '@components';
+import { createView } from './create-view.ts';
+import type { ModalContent, ModalProps, ModalResult, OnCloseModalHandler } from './modal.types.ts';
+import { scrollLock } from './utils/scroll-lock.ts';
 
 import styles from './modal.module.scss';
 
@@ -22,7 +19,7 @@ export class Modal extends Element<HTMLDivElement> {
   public constructor({ content, showCancelButton = true, onClose = null }: ModalProps) {
     super({ className: styles.backdrop });
 
-    const { contentContainer, okButton, cancelButton, modalRoot } = createElements();
+    const { contentContainer, okButton, cancelButton, modalRoot } = createView();
 
     this._root = modalRoot;
     this.contentRoot = contentContainer;

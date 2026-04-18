@@ -1,22 +1,18 @@
-import { JSONFileService } from '../../services/json-file-service/json-file-service.ts';
-import { JSONParse } from '../../utils/index.ts';
-import { Element } from '../base/index.ts';
+import { JSONParse, LocalStorageKey, LS_PREFIX } from '@common';
+import { Element } from '@components';
+import { JSONFileService } from '@services';
 import { Option } from '../option-list/option/option.ts';
-
+import styles from './option-list.module.scss';
 import {
   getOptionListFromLocalStorage,
   getPressedDeleteButtonId,
   isLikeListData,
   isValidWeight,
-  LS_KEY_LIST,
   normalizeCSVText,
   parseCSVLine,
-} from './utils/misc.ts';
+} from './option-list.utils.ts';
 
-import styles from './option-list.module.scss';
-
-const FILE_PREFIX = 'options';
-const FILE_NAME = `${FILE_PREFIX}-dmt-0fef90dd`;
+const FILE_NAME = `options-${LS_PREFIX}`;
 const INITIAL_ID = 1;
 
 export type OptionData = {
@@ -91,11 +87,11 @@ export class OptionList extends Element<HTMLUListElement> {
 
   public saveToLocalStorage(): void {
     const data = this.serialize();
-    localStorage.setItem(LS_KEY_LIST, data);
+    localStorage.setItem(LocalStorageKey.OptionList, data);
   }
 
   public updateFromLocalStorage(): boolean {
-    const data = localStorage.getItem(LS_KEY_LIST);
+    const data = localStorage.getItem(LocalStorageKey.OptionList);
     this.updateFromJSON(data ?? '');
 
     return Boolean(data);

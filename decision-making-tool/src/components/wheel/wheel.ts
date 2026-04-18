@@ -1,18 +1,16 @@
-import { getRndColorMixCss } from '../../utils/index.ts';
-import { Element } from '../base/element.ts';
-import type { OptionData } from '../option-list/option-list.ts';
-//import { rndInt } from './../../utils/misc';
-import type { OnSlideChangeHandler, Point, SliceData } from './types.ts';
-import { DrawHelper } from './utils/draw-helper.ts';
+import { getRndColorMixCss } from '@common';
+import type { OptionData } from '@components';
+import { Element } from '@components';
 import {
   createSlicesFromOptions,
+  DrawHelper,
   easeOutCubic,
   isCurrentSlice,
   PI2,
   updateSliceAngles,
-} from './utils/misc.ts';
-
+} from './utils';
 import styles from './wheel.module.scss';
+import type { OnSlideChangeHandler, Point, SliceData } from './wheel.types.ts';
 
 export const NEEDLE_RADIUS_RATIO = 0.15;
 const CANVAS_PADDING = 30;

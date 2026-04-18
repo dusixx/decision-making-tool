@@ -1,2 +1,2 @@
-import './src/app/app.ts';
-import './src/styles/sass/global.scss';
+import '@app/app.ts';
+import '@styles/sass/global.scss';
