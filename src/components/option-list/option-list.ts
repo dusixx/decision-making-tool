@@ -1,7 +1,6 @@
 import { JSONParse, LocalStorageKey, LS_PREFIX } from '@common';
 import { Element } from '@components';
 import { JSONFileService } from '@services';
-import { Option } from '../option-list/option/option.ts';
 import styles from './option-list.module.scss';
 import {
   getOptionListFromLocalStorage,
@@ -11,6 +10,7 @@ import {
   normalizeCSVText,
   parseCSVLine,
 } from './option-list.utils.ts';
+import { Option } from './option/option.ts';
 
 const FILE_NAME = `options-${LS_PREFIX}`;
 const INITIAL_ID = 1;
