@@ -1,5 +1,11 @@
-import type { BaseElementProps } from './base-element.utils.ts';
 import { createElement } from './base-element.utils.ts';
+
+export type BaseElementProps<T extends HTMLElement = HTMLElement> = Partial<
+  Omit<T, 'tagName' | 'classList'>
+> & {
+  tag?: keyof HTMLElementTagNameMap;
+  text?: string;
+};
 
 export class BaseElement<T extends HTMLElement = HTMLElement> {
   protected _children: BaseElement[] = [];

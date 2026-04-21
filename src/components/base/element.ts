@@ -1,6 +1,6 @@
 import { Visibility } from '../../common/constants.ts';
+import type { BaseElementProps } from './base-element/base-element.ts';
 import { BaseElement } from './base-element/base-element.ts';
-import type { BaseElementProps } from './base-element/base-element.utils.ts';
 
 export class Element<T extends HTMLElement = HTMLElement> extends BaseElement<T> {
   protected override _children: Element[] = [];
