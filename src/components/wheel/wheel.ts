@@ -1,24 +1,22 @@
-import { getRndColorMixCss } from '@common';
+import { getRndColorMixCss, PI2 } from '@common';
 import type { OptionData } from '@components';
 import { Element } from '@components';
+import { DrawHelper } from './draw-helper/draw-helper.ts';
 import {
-  createSlicesFromOptions,
-  DrawHelper,
-  easeOutCubic,
-  isCurrentSlice,
-  PI2,
-  updateSliceAngles,
-} from './utils';
+  CANVAS_PADDING,
+  ERR_INVALID_CONTEXT,
+  MIN_TURNS_COUNT,
+  NEEDLE_RADIUS_RATIO,
+  WHEEL_DEFAULT_RADIUS,
+} from './wheel.constants.ts';
 import styles from './wheel.module.scss';
 import type { OnSlideChangeHandler, Point, SliceData } from './wheel.types.ts';
-
-export const NEEDLE_RADIUS_RATIO = 0.15;
-const CANVAS_PADDING = 30;
-const WHEEL_DEFAULT_RADIUS = 250;
-const MIN_TURNS_COUNT = 5;
-
-const ERR_INVALID_CONTEXT =
-  'The context id is not supported, or the canvas has already been set to a different context mode';
+import {
+  createSlicesFromOptions,
+  easeOutCubic,
+  isCurrentSlice,
+  updateSliceAngles,
+} from './wheel.utils.ts';
 
 type Props = {
   options: OptionData[];

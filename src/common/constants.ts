@@ -1,6 +1,8 @@
 export enum EventType {
-  BeforeContentChange = 'beforecontentchange',
+  BeforeContentChange = 'before-content-change',
 }
+
+export const PI2 = Math.PI * 2;
 
 export enum Icon {
   Palette = '🎨',

@@ -1,27 +1,8 @@
+import { scrollLockStyle } from './scroll-lock.utils.ts';
+
 const { body } = document;
 
-const isVScrollBarVisible = (): boolean => {
-  const currentBodyClientWidth = body.clientWidth;
-  const currentBodyOverflow = body.style.overflow;
-
-  body.style.overflow = 'hidden';
-  const result = currentBodyClientWidth !== body.clientWidth;
-  body.style.overflow = currentBodyOverflow;
-
-  return result;
-};
-
-const scrollLockStyle = (bodyCssText: string, windowTopY: number): string => {
-  return `
-    ${bodyCssText};
-    position: fixed;
-    top: -${windowTopY.toString()}px;
-    width: 100%;
-    overflow-y: ${isVScrollBarVisible() ? `scroll` : `hidden`};
-  `;
-};
-
-class ScrollLock {
+class _ScrollLock {
   private windowTopY: number = 0;
   private bodyCssText: string = '';
   private locked: boolean = false;
@@ -53,4 +34,4 @@ class ScrollLock {
   }
 }
 
-export const scrollLock = new ScrollLock();
+export const ScrollLock = new _ScrollLock();

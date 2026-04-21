@@ -1,10 +1,10 @@
 import { Button, div } from '@components';
-import styles from './modal.module.scss';
+import styles from '../modal.module.scss';
 
-export enum ButtonText {
-  OK = 'ok',
-  Cancel = 'cancel',
-}
+export const ButtonText = {
+  OK: 'ok',
+  Cancel: 'cancel',
+} as const;
 
 export const createView = (): {
   contentContainer: ReturnType<typeof div>;

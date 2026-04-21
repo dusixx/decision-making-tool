@@ -1,10 +1,6 @@
 import { isPositiveInt, JSONParse, LocalStorageKey } from '@common';
-import { type ListData } from './option-list.ts';
-
-const DELETE_BTN_SELECTOR = '[data-delete]';
-
-const RE_END_OF_LINE = /\r?\n|\r/;
-const RE_CSV_LINE = /^(?<title>.*),(?<weight>[^,]*)$/;
+import { DELETE_BTN_SELECTOR, RE_CSV_LINE, RE_END_OF_LINE } from './option-list.constants.ts';
+import type { ListData } from './option-list.types.ts';
 
 export const getPressedDeleteButtonId = ({ target }: Event): number | undefined => {
   if (!(target instanceof HTMLElement)) {

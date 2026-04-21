@@ -1,6 +1,5 @@
 import { Icon, getRndColorMixCss } from '@common';
 import { Element, span } from '@components';
-
 import styles from './header.module.scss';
 
 const LOGO_TEXT = `Make#ur${Icon.Pull8Ball}Decision`;

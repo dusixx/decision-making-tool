@@ -1,14 +1,8 @@
-import { getRndColorMixCss, randomizeArray, rndInt } from '@common';
-import type { OptionData, SliceData } from '@components';
-
-export const PI2 = Math.PI * 2;
-const CURSOR_POSITION_RAD = Math.PI * 1.5;
-
-enum WheelSpin {
-  MinSpeed = 5,
-  MaxSpeed = 10,
-  SpeedRatio = 1e4,
-}
+import { PI2 } from '@/common/constants.ts';
+import { getRndColorMixCss, randomizeArray, rndInt } from '@/common/index.ts';
+import type { OptionData } from '../option-list/option-list.types.ts';
+import { CURSOR_POSITION_RAD, WheelSpin } from './wheel.constants.ts';
+import type { SliceData } from './wheel.types.ts';
 
 export const createSlicesFromOptions = (
   options: OptionData[],

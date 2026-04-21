@@ -1,4 +1,4 @@
-import { rndInt } from './misc.ts';
+import { rndInt } from './index.ts';
 
 type ColorRGBHex = {
   rgb: number[];

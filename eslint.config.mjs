@@ -12,11 +12,7 @@ export default tseslint.config(
   {
     // disable type-aware linting on JS files
     // https://typescript-eslint.io/troubleshooting/typed-linting/#how-do-i-disable-type-checked-linting-for-a-file
-    files: [
-      '**/*.js',
-      'src/components/base/base-element/base-element.utils.ts',
-      'src/sections/decision-picker/raf.ts',
-    ],
+    files: ['**/*.js', '**/*.mjs', 'src/components/base/base-element/base-element.utils.ts'],
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
@@ -31,7 +27,6 @@ export default tseslint.config(
       'stylelint.config.mjs',
       '**/*.js',
       'src/components/base/base-element/base-element.utils.ts',
-      'src/sections/decision-picker/raf.ts',
     ],
     languageOptions: {
       parserOptions: {
@@ -40,7 +35,7 @@ export default tseslint.config(
       },
     },
     linterOptions: {
-      noInlineConfig: true,
+      noInlineConfig: false,
       reportUnusedDisableDirectives: true,
     },
     rules: {

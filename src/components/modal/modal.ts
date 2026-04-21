@@ -1,11 +1,9 @@
 import { KeyboardEventKey, Visibility, isKeyPressed } from '@common';
 import type { Button, div } from '@components';
-import { Element } from '@components';
-import { createView } from './create-view.ts';
-import type { ModalContent, ModalProps, ModalResult, OnCloseModalHandler } from './modal.types.ts';
-import { scrollLock } from './utils/scroll-lock.ts';
-
+import { Element, ScrollLock } from '@components';
+import { createView } from './create-view/create-view.ts';
 import styles from './modal.module.scss';
+import type { ModalContent, ModalProps, ModalResult, OnCloseModalHandler } from './modal.types.ts';
 
 const { body } = document;
 
@@ -99,7 +97,7 @@ export class Modal extends Element<HTMLDivElement> {
 
   private toggle(force: boolean): boolean {
     const wasShown = this.toggleClass(styles.active, force);
-    scrollLock.toggle(wasShown);
+    ScrollLock.toggle(wasShown);
 
     if (wasShown) {
       document.addEventListener('keydown', this.handleDocumentKeydown);

@@ -2,7 +2,6 @@ import { Endpoint } from '@app/routes.ts';
 import { Icon } from '@common';
 import { Button, Element, div, paragraph } from '@components';
 import { type Router } from '@router';
-
 import styles from './not-found.module.scss';
 
 const BUTTON_TEXT = `${Icon.House} go to list`;
@@ -19,15 +18,12 @@ export class NotFoundSection extends Element {
       text: NOT_FOUND_TEXT,
       className: styles.para,
     });
-
     this.button = new Button({ text: BUTTON_TEXT, className: styles.btn });
-
     const wrapper = div({ className: styles.wrapper }, this.notFoundText, this.button);
 
     this.button.onClick = (): void => {
       this.router.navigate(Endpoint.OptionList, true);
     };
-
     this.append(wrapper);
   }
 }

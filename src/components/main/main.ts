@@ -10,10 +10,8 @@ export class MainSection extends Element {
 
   constructor() {
     super({ tag: 'main' });
-
     this.router = new Router(routes);
-
-    this.router.subscribe('routechange', this.handleRouteChange);
+    this.router.subscribe('route-change', this.handleRouteChange);
   }
 
   public setContent(content: Element): void {

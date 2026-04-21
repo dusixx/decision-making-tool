@@ -1,9 +1,7 @@
 import type { Element } from '@components';
 
 export type ModalResult = 'confirmed' | 'cancelled';
-
 export type OnCloseModalHandler = ((result: ModalResult) => void) | null;
-
 export type ModalContent = Element | string;
 
 export type ModalProps = {

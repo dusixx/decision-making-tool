@@ -1,7 +1,6 @@
-import { Icon, JSONParse, LocalStorageKey } from '../../../common';
-import { Button } from '../../base';
-
-import styles from '../decision-picker.module.scss';
+import { Icon, JSONParse, LocalStorageKey } from '@common';
+import { Button } from '@components';
+import styles from './decision-picker.module.scss';
 
 const BUTTON_TITLE = 'sound on/off';
 

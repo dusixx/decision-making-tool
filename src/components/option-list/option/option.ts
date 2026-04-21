@@ -1,5 +1,5 @@
 import { Element } from '@components';
-import { createView } from './create-view.ts';
+import { createView } from './create-view/create-view.ts';
 
 import styles from './option.module.scss';
 

@@ -1,24 +1,23 @@
 import { Button, input, label } from '@components';
+import styles from '../option.module.scss';
+import {
+  DELETE_BTN_TEXT,
+  DELETE_BTN_TITLE,
+  TITLE_MAX_LEN,
+  TITLE_MIN_LEN,
+  TITLE_PLACEHOLDER,
+  WEIGHT_MIN,
+  WEIGHT_PLACEHOLDER,
+} from './create-view.constants.ts';
 
-import styles from './option.module.scss';
-
-const TITLE_MAX_LEN = 120;
-const TITLE_MIN_LEN = 10;
-const WEIGHT_MIN = 0;
-
-const TITLE_PLACEHOLDER = 'title';
-const WEIGHT_PLACEHOLDER = 'weight';
-const DELETE_BTN_TEXT = '✕';
-const DELETE_BTN_TITLE = 'delete';
-
-type OptionElements = {
+type OptionView = {
   label: ReturnType<typeof label>;
   title: ReturnType<typeof input>;
   weight: ReturnType<typeof input>;
   button: Button;
 };
 
-export function createView(id: number): OptionElements {
+export function createView(id: number): OptionView {
   const optionId = `option-#${id.toString()}`;
 
   const _label = label({
@@ -49,5 +48,10 @@ export function createView(id: number): OptionElements {
   });
   button.node.dataset.delete = id.toString();
 
-  return { label: _label, title, weight, button };
+  return {
+    label: _label,
+    title,
+    weight,
+    button,
+  };
 }

@@ -1,6 +1,7 @@
-import type { OptionData } from '@components';
 import { OptionList } from '@components';
 import { isValidWeight } from '@components/option-list/option-list.utils.ts';
+import type { OptionData } from '../option-list/option-list.types.ts';
+import { VALID_OPTIONS_COUNT } from './option-list-section.constants.ts';
 
 export type ParseResult = {
   isValid: boolean;
@@ -8,15 +9,13 @@ export type ParseResult = {
   validOptions: OptionData[];
 };
 
-export const VALID_OPTIONS_COUNT = 2;
-
 export const parseOptionsData = (options: OptionData[]): ParseResult => {
   const result: ParseResult = {
     isValid: false,
     totalWeight: 0,
     validOptions: [],
   };
-  let validsCount = 0;
+  let validCount = 0;
 
   for (const option of options) {
     option.title = option.title.trim();
@@ -24,10 +23,10 @@ export const parseOptionsData = (options: OptionData[]): ParseResult => {
     if (option.title && isValidWeight(option.weight)) {
       result.totalWeight += option.weight;
       result.validOptions.push(option);
-      validsCount += 1;
+      validCount += 1;
     }
   }
-  result.isValid = validsCount >= VALID_OPTIONS_COUNT;
+  result.isValid = validCount >= VALID_OPTIONS_COUNT;
 
   return result;
 };

@@ -1,31 +1,20 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { Icon } from '@common';
 import { Button, div, input, label, OptionList, Wheel } from '@components';
+import { parseOptionsData } from '@components/option-list-section/option-list-section.utils.ts';
+import { SoundToggler } from '../sound-toggler.ts';
+import type { ButtonMap, DecisionPickerView } from './create-view.types';
+
+import styles from '../decision-picker.module.scss';
 import {
-  parseOptionsData,
-  VALID_OPTIONS_COUNT,
-} from '@components/option-list-section/option-list-section.utils.ts';
-import { SoundToggler } from './utils/sound-toggler.ts';
-
-import styles from './decision-picker.module.scss';
-
-export type DecisionPickerSectionButtonsMap = Record<keyof typeof buttonsData, Button>;
-
-const INVITATION_MESSAGE = 'Press start button';
-
-const ERR_INVALID_OPTIONS_COUNT = `
-  There must be at least ${VALID_OPTIONS_COUNT.toString()} valid options`;
-
-const buttonsData: Record<string, string> = {
-  back: `${Icon.LeftArrow} back`,
-  sound: 'sound',
-  repaint: Icon.Palette,
-  start: `${Icon.Rocket} start`,
-};
-
-const DURATION_ID = 'duration-id';
-const DEFAULT_DURATION = '10';
-const MIN_DURATION = '5';
-const MAX_DURATION = '30';
+  ButtonText,
+  DEFAULT_DURATION,
+  DURATION_ID,
+  ERR_INVALID_OPTIONS_COUNT,
+  INVITATION_MESSAGE,
+  MAX_DURATION,
+  MIN_DURATION,
+} from './create-view.constants.ts';
 
 const createWheel = (): Wheel => {
   const listData = OptionList.getFromLocalStorage();
@@ -53,7 +42,7 @@ const createDurationElement = (): {
 
   const durationInput = input({
     type: 'number',
-    title: 'duration',
+    title: DURATION_ID,
     className: styles.duration,
     id: DURATION_ID,
     min: MIN_DURATION,
@@ -64,7 +53,10 @@ const createDurationElement = (): {
 
   durationWrapper.append(_label, durationInput);
 
-  return { durationWrapper, durationInput };
+  return {
+    durationWrapper,
+    durationInput,
+  };
 };
 
 const createPickedOptionElement = (): ReturnType<typeof input> => {
@@ -77,18 +69,18 @@ const createPickedOptionElement = (): ReturnType<typeof input> => {
 };
 
 const createButtonsWrapper = (): {
-  buttonsMap: DecisionPickerSectionButtonsMap;
+  buttonsMap: ButtonMap;
   buttonsWrapper: ReturnType<typeof div>;
 } => {
-  const buttonsMap: DecisionPickerSectionButtonsMap = {};
+  const buttonsMap: Record<string, Button> = {};
 
-  const buttons = Object.entries(buttonsData).map(([name, text]) => {
+  const buttons = Object.entries(ButtonText).map(([name, text]) => {
     const button =
-      text === buttonsData.sound ? new SoundToggler() : new Button({ className: styles.btn, text });
+      text === ButtonText.sound ? new SoundToggler() : new Button({ className: styles.btn, text });
 
-    if (button.text === buttonsData.start) {
+    if (text === ButtonText.start) {
       button.toggleClass(styles.startBtn);
-    } else if (button.text === buttonsData.repaint) {
+    } else if (text === ButtonText.repaint) {
       button.toggleClass(styles.repaintBtn);
     }
     buttonsMap[name] = button;
@@ -98,16 +90,13 @@ const createButtonsWrapper = (): {
 
   const buttonsWrapper = div({ className: styles.btns }, ...buttons);
 
-  return { buttonsMap, buttonsWrapper };
+  return {
+    buttonsMap: buttonsMap as ButtonMap,
+    buttonsWrapper,
+  };
 };
 
-export const createView = (): {
-  durationInput: ReturnType<typeof input>;
-  pickedOptionInput: ReturnType<typeof input>;
-  wrapper: ReturnType<typeof div>;
-  buttonsMap: DecisionPickerSectionButtonsMap;
-  wheel: Wheel;
-} => {
+export const createView = (): DecisionPickerView => {
   const wheel = createWheel();
   const { durationWrapper, durationInput } = createDurationElement();
   const pickedOptionInput = createPickedOptionElement();
@@ -115,5 +104,11 @@ export const createView = (): {
   const { buttonsMap, buttonsWrapper } = createButtonsWrapper();
   const wrapper = div({ className: styles.wrapper }, buttonsWrapper, inputsWrapper, wheel);
 
-  return { durationInput, pickedOptionInput, wheel, wrapper, buttonsMap };
+  return {
+    durationInput,
+    pickedOptionInput,
+    wheel,
+    wrapper,
+    buttonsMap,
+  };
 };

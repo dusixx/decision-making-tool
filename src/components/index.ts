@@ -6,6 +6,8 @@ export * from './modal/modal.ts';
 export * from './not-found/not-found.ts';
 export * from './option-list-section/option-list-section.ts';
 export * from './option-list/option-list.ts';
+export * from './option-list/option-list.types.ts';
 export * from './paste-list/paste-list.ts';
+export * from './scroll-lock/scroll-lock.ts';
 export * from './wheel/wheel.ts';
 export * from './wheel/wheel.types.ts';

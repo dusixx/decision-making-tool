@@ -1,21 +1,21 @@
+import { PI2 } from '@/common/constants.ts';
 import type { SliceData } from '@components';
-import { NEEDLE_RADIUS_RATIO, type Wheel } from '@components';
-import { PI2 } from './misc.ts';
-
-const CURSOR_LINE_WIDTH = 2;
-const LINE_WIDTH = 2;
-const SHADOW_BLUR = 4;
-
-const STROKE_COLOR = 'white';
-const CURSOR_COLOR = 'rgb(206, 20, 104)';
-const SHADOW_COLOR = 'rgb(190 190 190)';
-const NEEDLE_COLOR = 'white';
-
-const SLICE_TEXT_NEEDLE_OFFSET = 25;
-const SLICE_TEXT_VISIBILITY_ANGLE_THRESHOLD = 0.27;
-const SLICE_TEXT_COLOR = 'rgb(40 40 40)';
-const SLICE_TEXT_FONT = '16px sans-serif';
-const SLICE_TEXT_BASELINE = 'middle';
+import { type Wheel } from '@components';
+import { NEEDLE_RADIUS_RATIO } from '../wheel.constants.ts';
+import {
+  CURSOR_COLOR,
+  CURSOR_LINE_WIDTH,
+  LINE_WIDTH,
+  NEEDLE_COLOR,
+  SHADOW_BLUR,
+  SHADOW_COLOR,
+  SLICE_TEXT_BASELINE,
+  SLICE_TEXT_COLOR,
+  SLICE_TEXT_FONT,
+  SLICE_TEXT_NEEDLE_OFFSET,
+  SLICE_TEXT_VISIBILITY_ANGLE_THRESHOLD,
+  STROKE_COLOR,
+} from './draw-helper.constants.ts';
 
 export class DrawHelper {
   constructor(

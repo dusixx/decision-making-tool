@@ -7,7 +7,7 @@ enum HistoryAction {
 }
 
 type RouterEventMap = {
-  routechange: (route: Route) => void;
+  'route-change': (route: Route) => void;
 };
 
 type RouterEventHandlers = {
@@ -76,13 +76,13 @@ export class Router {
     if (found) {
       const action = replace ? HistoryAction.ReplaceState : HistoryAction.PushState;
       history[action](null, '', pathname);
-      this.callHandlers('routechange', found);
+      this.callHandlers('route-change', found);
 
       return;
     }
     const page404 = this.findRoute(Endpoint.NotFound);
     if (page404) {
-      this.callHandlers('routechange', page404);
+      this.callHandlers('route-change', page404);
     }
   }
 }

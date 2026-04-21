@@ -1,8 +1,7 @@
 import { Element } from '../../components/base/element.ts';
 import { div } from '../../components/base/tags.ts';
-import { Logo } from './logo.ts';
-
 import styles from './header.module.scss';
+import { Logo } from './logo.ts';
 
 export class HeaderSection extends Element {
   constructor() {

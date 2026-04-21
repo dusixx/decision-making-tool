@@ -1,11 +1,12 @@
+import { Endpoint } from '@app/routes.ts';
 import { EventType, Sound } from '@common';
 import type { SliceData, Wheel } from '@components';
 import { Element } from '@components';
 import type { Router } from '@router';
-import { Endpoint } from '@app/routes.ts';
-import type { DecisionPickerSectionButtonsMap } from './create-view.ts';
-import { createView } from './create-view.ts';
-import { showVictoryMessage, SoundToggler } from './utils';
+import { createView } from './create-view/create-view.ts';
+import type { ButtonMap } from './create-view/create-view.types.ts';
+import { showVictoryMessage } from './decision-picker.utils.ts';
+import { SoundToggler } from './sound-toggler.ts';
 
 const PICKED_OPTION_HIGHLIGHT_BG = 'var(--color-picked-option-bg)';
 
@@ -13,7 +14,7 @@ export class DecisionPickerSection extends Element {
   private wheel: Wheel;
   private duration: Element<HTMLInputElement>;
   private pickedOption: Element<HTMLInputElement>;
-  private buttons: DecisionPickerSectionButtonsMap;
+  private buttons: ButtonMap;
 
   constructor(private router: Router) {
     super({ tag: 'section' });

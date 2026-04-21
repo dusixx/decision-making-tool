@@ -1,7 +1,9 @@
-import { JSONParse, LocalStorageKey, LS_PREFIX } from '@common';
+import { JSONParse, LocalStorageKey } from '@common';
 import { Element } from '@components';
 import { JSONFileService } from '@services';
+import { FILE_NAME, INITIAL_ID } from './option-list.constants.ts';
 import styles from './option-list.module.scss';
+import type { ListData, OptionData } from './option-list.types.ts';
 import {
   getOptionListFromLocalStorage,
   getPressedDeleteButtonId,
@@ -11,20 +13,6 @@ import {
   parseCSVLine,
 } from './option-list.utils.ts';
 import { Option } from './option/option.ts';
-
-const FILE_NAME = `options-${LS_PREFIX}`;
-const INITIAL_ID = 1;
-
-export type OptionData = {
-  id: number;
-  title: string;
-  weight: number;
-};
-
-export type ListData = {
-  list: OptionData[];
-  lastId: number;
-};
 
 export class OptionList extends Element<HTMLUListElement> {
   private lastId = INITIAL_ID;

@@ -1,10 +1,7 @@
-export * from './sound-toggler.ts';
-
-import { Icon } from '../../../common/constants.ts';
-import { showModalMessage } from '../../modal/utils/show-modal-message.ts';
-import type { SliceData } from '../../wheel/wheel.types.ts';
-
-import styles from '../decision-picker.module.scss';
+import { Icon } from '@/common';
+import { showModalMessage } from '@/common/utils/index.ts';
+import type { SliceData } from '../wheel/wheel.types.ts';
+import styles from './decision-picker.module.scss';
 
 const ERR_NO_WINNER = 'Something went wrong. The winner is not determined!';
 
