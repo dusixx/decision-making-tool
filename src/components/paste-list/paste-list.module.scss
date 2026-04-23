@@ -1,0 +1,21 @@
+$height: 300px;
+
+.text {
+  resize: none;
+
+  display: flex;
+
+  width: 100%;
+  height: $height;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+
+  font-family: inherit;
+
+  outline: none;
+}
+
+.text::placeholder {
+  opacity: 0.5;
+}

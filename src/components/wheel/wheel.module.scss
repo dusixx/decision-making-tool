@@ -1,0 +1,14 @@
+.wheel {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: max-content;
+}
+
+.canvas {
+  position: relative;
+  max-width: 100%;
+}

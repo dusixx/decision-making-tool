@@ -1,0 +1,151 @@
+import { JSONParse, LocalStorageKey } from '@common';
+import { Element } from '@components';
+import { JSONFileService } from '@services';
+import { FILE_NAME, INITIAL_ID } from './option-list.constants.ts';
+import styles from './option-list.module.scss';
+import type { ListData, OptionData } from './option-list.types.ts';
+import {
+  getOptionListFromLocalStorage,
+  getPressedDeleteButtonId,
+  isLikeListData,
+  isValidWeight,
+  normalizeCSVText,
+  parseCSVLine,
+} from './option-list.utils.ts';
+import { Option } from './option/option.ts';
+
+export class OptionList extends Element<HTMLUListElement> {
+  private lastId = INITIAL_ID;
+  private fileService = new JSONFileService();
+  private optionsMap: Map<number, Option> = new Map();
+
+  constructor() {
+    super({ tag: 'ul', className: styles.list });
+    this.init();
+  }
+
+  public get length(): number {
+    return this.optionsMap.size;
+  }
+
+  public get data(): OptionData[] {
+    return [...this.optionsMap].map(([id, { title, weight }]) => {
+      const weightNumber = isValidWeight(weight) ? Number(weight) : 0;
+
+      return { id, title, weight: weightNumber };
+    });
+  }
+
+  public static getFromLocalStorage = (): ListData | null => {
+    return getOptionListFromLocalStorage();
+  };
+
+  public add(title: string = '', weight: number = 0): Option {
+    const option = this.addNewOption({ id: this.lastId, title, weight });
+
+    this.append(option);
+    option.node.scrollIntoView();
+    this.lastId += 1;
+
+    return option;
+  }
+
+  public delete(id: number): void {
+    const option = this.getItemById(id);
+    if (!option) {
+      return;
+    }
+    this.removeChildByRef(option);
+    this.optionsMap.delete(id);
+
+    if (this.optionsMap.size === 0) {
+      this.lastId = INITIAL_ID;
+    }
+  }
+
+  public clear(): void {
+    this.optionsMap.clear();
+    this.removeChildren();
+    this.lastId = INITIAL_ID;
+  }
+
+  public saveToFile(): void {
+    this.fileService.save(this.serialize(), FILE_NAME);
+  }
+
+  public saveToLocalStorage(): void {
+    const data = this.serialize();
+    localStorage.setItem(LocalStorageKey.OptionList, data);
+  }
+
+  public updateFromLocalStorage(): boolean {
+    const data = localStorage.getItem(LocalStorageKey.OptionList);
+    this.updateFromJSON(data ?? '');
+
+    return Boolean(data);
+  }
+
+  public updateFromJSON(txt: string): void {
+    const data = JSONParse(txt);
+    if (isLikeListData(data)) {
+      this.updateFromListData(data);
+    }
+  }
+
+  public updateFromCSV(txt: string): void {
+    const lines = normalizeCSVText(txt);
+    if (!lines) {
+      return;
+    }
+    const options = lines.map((line) => {
+      const { title, weight } = parseCSVLine(line) ?? {};
+
+      if (!weight || isValidWeight(weight)) {
+        return this.add(title, Number(weight));
+      }
+      return null;
+    });
+
+    this.append(...options);
+  }
+
+  private updateFromListData(data: ListData): void {
+    const { lastId, list } = data;
+
+    this.clear();
+    this.append(...list.map(this.addNewOption));
+    this.lastId = lastId;
+  }
+
+  private addNewOption = ({ id, title, weight }: OptionData): Option => {
+    const option = new Option(id);
+
+    option.title = title;
+    option.weight = isValidWeight(weight) ? weight.toString() : '';
+    this.optionsMap.set(id, option);
+
+    return option;
+  };
+
+  private serialize(): string {
+    return JSON.stringify({
+      list: this.data,
+      lastId: this.lastId,
+    });
+  }
+
+  private init(): void {
+    this.addListener('click', (event) => {
+      const id = getPressedDeleteButtonId(event);
+      if (id != null) {
+        this.delete(id);
+      }
+    });
+  }
+
+  private getItemById(id: number): Element<HTMLLIElement> | undefined {
+    if (this.optionsMap.has(id)) {
+      return this.optionsMap.get(id);
+    }
+  }
+}

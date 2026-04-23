@@ -1,0 +1,19 @@
+.wrapper {
+  @extend %wrapper;
+  @extend %underline;
+
+  background-color: white;
+  box-shadow: var(--box-shaddow);
+}
+
+.btn {
+  @extend %btn-primary;
+}
+
+.start-btn {
+  background-color: var(--color-accent);
+}
+
+.btns {
+  @extend %section-btns;
+}

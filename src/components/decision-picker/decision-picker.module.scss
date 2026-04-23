@@ -1,0 +1,93 @@
+.wrapper {
+  @extend %wrapper;
+
+  @extend %underline;
+
+  gap: 25px;
+  background-color: white;
+  box-shadow: var(--box-shaddow);
+}
+
+.sound-btn,
+.repaint-btn {
+  @extend %btn-primary;
+
+  min-width: 80px;
+  font-size: 18px;
+  background-color: rgb(214 226 240);
+}
+
+.btn {
+  @extend %btn-primary;
+}
+
+.start-btn {
+  background-color: var(--color-accent);
+}
+
+.btns {
+  @extend %section-btns;
+}
+
+.duration {
+  @extend %text-input;
+
+  display: flex;
+  width: 50px;
+  text-align: center;
+}
+
+.duration:invalid {
+  border-color: var(--color-accent-20);
+  background-color: var(--color-invalid-bg);
+}
+
+.picked-option {
+  @extend %text-input;
+
+  padding-right: 20px;
+  padding-left: 20px;
+
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+
+  &::placeholder {
+    opacity: 0.4;
+  }
+}
+
+.inputs {
+  @extend %section-btns;
+
+  gap: 10px;
+}
+
+.label {
+  font-size: 20px;
+}
+
+.duration-wrapper {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+
+  & label {
+    font-size: 20px;
+  }
+}
+
+.victory-message {
+  text-align: center;
+  word-break: break-all;
+}
+
+.winner-id {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0 2px;
+
+  font-size: 14px;
+  letter-spacing: -0.5px;
+}
